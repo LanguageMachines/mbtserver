@@ -9,5 +9,6 @@ EXTRA_DIST = bootstrap AUTHORS TODO NEWS
 
 pkgconfigdir = $(libdir)/pkgconfig
 
+
 $(top_srcdir)/ChangeLog: $(top_srcdir)/NEWS
 	svn update; svn2cl --include-rev
