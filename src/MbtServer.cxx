@@ -1,9 +1,11 @@
 /*
+  $Id$
+  $URL$
   Copyright (c) 1998 - 2010
   ILK  -  Tilburg University
   CNTS -  University of Antwerp
  
-  This file is part of Mbt3
+  This file is part of MbtServer
 
   Mbt3 is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
