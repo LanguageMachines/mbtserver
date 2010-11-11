@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-# $Id: configure.ac 5764 2010-08-19 14:51:41Z joostvb $
-# $URL: https://ilk.uvt.nl/svn/trunk/sources/Mbt3/configure.ac $
+# $Id$
+# $URL$
 
 AC_PREREQ(2.61)
 AC_INIT([MbtServer],[0.1],[timbl@uvt.nl])
