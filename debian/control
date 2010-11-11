@@ -1,0 +1,15 @@
+Source: mbtserver
+Section: science
+Priority: extra
+Maintainer: Ko van der Sloot <Ko.vanderSloot@uvt.nl>
+Uploaders: Joost van Baal <joostvb-mbt@ad1810.com>
+Build-Depends: cdbs, debhelper (>= 7), timbl (>= 6.2.0), mbt (>= 3.2.4)
+Standards-Version: 3.8.0
+Homepage: http://ilk.uvt.nl/mbt/
+Vcs-Svn: https://svn.ilk.uvt.nl/svn/trunk/sources/Mbt3
+
+Package: mbtserver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, timbl (>= 6.2.0), mbt (>=3.2.4), adduser
+Description: A server providing a memory-based tagger for natural language processing
+ MbtServer is server frontend for the MBT tagger.
