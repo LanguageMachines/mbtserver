@@ -96,6 +96,8 @@ AC_CONFIG_FILES([
   src/Makefile
   include/Makefile
   include/mbtserver/Makefile
+  init/Makefile
+  init/mbtserver
   docs/Makefile
   example/Makefile
 ])
