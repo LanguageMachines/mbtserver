@@ -1,4 +1,3 @@
+man1_MANS = MbtServer.1
 
-docdir = $(datadir)/doc/$(PACKAGE)
-doc_DATA = Mbt_3.2_Manual.pdf 
-EXTRA_DIST = $(doc_DATA)
+EXTRA_DIST = MbtServer.1

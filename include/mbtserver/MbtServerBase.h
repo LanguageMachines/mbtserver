@@ -28,7 +28,7 @@
 
 #include "timbl/TimblAPI.h"
 #include "mbt/MbtAPI.h"
-#include "timblserver/LogStream.h"
+#include "timbl/LogStream.h"
 #include "timblserver/SocketBasics.h"
 
 namespace Tagger {
