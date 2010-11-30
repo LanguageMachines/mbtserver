@@ -1,29 +1,31 @@
 .TH TimblServer 1 "2010 november 17"
 
 .SH NAME
-TimblServer - Tilburg Memory Based Learner Server
+MbtServer - Tilburg Memory Based Tagger Server
 .SH SYNOPSYS
-TimblServer [TiMBL options] [Server options]
+MbtServer -s settingsfile -S portnumber
 
-TimblServer --config=configfile [--pidfile=pfile] [--logfile=lfile] [--daemonize=val]
+or
+
+MbtServer [mbt options] [server options]
 
 .SH DESCRIPTION
-Timblserver extends 
-.B Timbl
-with a server layer. It provided the possibility to access one Timbl Instance
-from multiple sessions. But is also alows to run and access different Timbl 
-Instances in parallel.
+MbServer extends 
+.B Mbt
+with a server layer. It provided the possibility to access a trained tagger
+from multiple sessions.
 
 .SH OPTIONS
+
+For the 
+.B Mbt
+options see
+.BR Mbt (1)
+
 The
 .B server
 options are
 .TP
-
-.BR --config =file
-.RS
-read server settings from file
-.RE
 
 .BR --pidfile =file
 .RS
@@ -44,19 +46,8 @@ run the server as a daemon. Default is yes.
 .B -S
 <port>
 .RS
-run the server on 'port'. (deprecated) 
+run the server on 'port'.
 .RE
-
-.B -C
-<num>
-.RS
-set maximum number of parallel connections to 'num' (deprecated)
-.RE
-
-all
-.B Timbl
-options are documented in
-.BR Timbl (1)
 
 .SH BUGS
 possibly
@@ -67,6 +58,6 @@ Ko van der Sloot Timbl@uvt.nl
 Antal van den Bosch Timbl@uvt.nl
 
 .SH SEE ALSO
+.BR Mbt (1)
 .BR Timbl (1)
-
 
