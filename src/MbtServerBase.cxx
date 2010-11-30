@@ -52,8 +52,12 @@ namespace Tagger {
     TaggerClass *exp = new TaggerClass();
     exp->parse_run_args( opts );
     exp->set_default_filenames();
-    exp->InitTagging();
-    return exp;
+    if ( exp->InitTagging() )
+      return exp;
+    else {
+      delete exp;
+      return 0;
+    }
   }
 
   MbtServer::MbtServer( Timbl::TimblOpts& opts ): cur_log("MbtServer", 
@@ -89,8 +93,11 @@ namespace Tagger {
       doDaemon = ( val != "no" && val != "NO" && val != "false" && val != "FALSE" );
       opts.Delete( "daemonize" );
     }
-    
     exp = createServerPimpl( opts );
+    if ( !exp ){
+      cerr << "starting the server failed." << endl;
+      exit(1);
+    }
   } 
  
   MbtServer::~MbtServer(){
