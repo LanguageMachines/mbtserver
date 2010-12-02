@@ -16,16 +16,16 @@ MbtServer -s settingsfile -S portnumber
 MbServer extends 
 .B Mbt
 with a server layer. It provided the possibility to access a trained tagger
-from multiple sessions. It also alows to run and access different taggers in
+from multiple sessions. It also allows to run and access different taggers in
 parallel.
 
 .SH OPTIONS
 
-.BR --config =file
+.BR --config=file
 .RS
-read the settings for one or more taggers from the specified file
+read the settings for one or more taggers from the specified configuration file.
 
-A configfile 
+A configuration file 
 .I must
 contain a port specification:
 
@@ -44,7 +44,7 @@ give one or more Mbt tagger descriptions:
 <base>=<Mbt options line>
 
 The <base> is a basename for the Tagger that will be started with the options 
-specified. It is needed because it is possible to start several (different) 
+specified. The basename is needed because it is possible to start several (different) 
 taggers. When accessing the server, we need a way to tell which Tagger we want
 to use.
 In general, the Mbt options line will just be something like: 
@@ -95,7 +95,7 @@ read settings (probably generated with
 run the server on 'port'.
 .RE
 
-For the 
+For 
 .B Mbt
 options see
 .BR Mbt (1)
@@ -113,5 +113,6 @@ Antal van den Bosch Timbl@uvt.nl
 
 .SH SEE ALSO
 .BR Mbt (1)
+.BR Mbtg (1)
 .BR Timbl (1)
 
