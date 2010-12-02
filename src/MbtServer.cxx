@@ -31,7 +31,7 @@
 
 int main(int argc, char *argv[]) {
   TimblOpts opts( argc, argv );
-  Tagger::RunServer( opts );   
+  Tagger::StartServer( opts );   
   exit(EXIT_SUCCESS);
 }
 

@@ -34,36 +34,30 @@
 namespace Tagger {
   class MbtServer {
     friend class TaggerClass;
+    friend void *tagChild( void * );
   public:
     LogStream cur_log;
-    bool doDebug() { return debug; };
-    TaggerClass *theExp(){ return exp; };
     virtual ~MbtServer();
     static std::string VersionInfo( bool );
     MbtServer( Timbl::TimblOpts& );
-    void RunClassicServer();
+    void RunServer();
+    void createServers();
   protected:
     bool getConfig( const std::string& );
-    bool startClassicServer( int, int=0 );
-    //    bool startMultiServer( const std::string& );
-    //    void RunHttpServer();
-    TaggerClass *splitChild() const;
-    void setDebug( bool d ){ debug = d; };
     Sockets::ServerSocket *TcpSocket() const { return tcp_socket; };
-    TaggerClass *exp;
+    std::map<std::string, TaggerClass *> experiments;
     std::string logFile;
     std::string pidFile;
     bool doDaemon;
   private:
-    bool debug;
     int maxConn;
     int serverPort;
+    LogLevel dbLevel;
     Sockets::ServerSocket *tcp_socket;
-    //    std::string serverProtocol;
-    //    std::string serverConfigFile;
-    //    std::map<std::string, std::string> serverConfig;
+    std::string configFile;
+    std::map<std::string, std::string> serverConfig;
   };
 
-  void RunServer( Timbl::TimblOpts& );
+  void StartServer( Timbl::TimblOpts& );
 }
 #endif

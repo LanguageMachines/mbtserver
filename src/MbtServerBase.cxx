@@ -48,7 +48,7 @@ using namespace Timbl;
 
 namespace Tagger {
 
-  TaggerClass *createServerPimpl( Timbl::TimblOpts& opts ){
+  TaggerClass *createPimpl( Timbl::TimblOpts& opts ){
     TaggerClass *exp = new TaggerClass();
     exp->parse_run_args( opts );
     exp->set_default_filenames();
@@ -59,26 +59,131 @@ namespace Tagger {
       return 0;
     }
   }
+  
+  bool MbtServer::getConfig( const string& serverConfigFile ){
+    maxConn = 25;
+    serverPort = -1;
+    ifstream is( serverConfigFile.c_str() );
+    if ( !is ){
+      cerr << "problem reading " << serverConfigFile << endl;
+      return false;
+    }
+    else {
+      string line;
+      while ( getline( is, line ) ){
+	if ( line.empty() || line[0] == '#' )
+	  continue;
+	string::size_type ispos = line.find('=');
+	if ( ispos == string::npos ){
+	  cerr << "invalid entry in: " << serverConfigFile 
+	       <<  " offending line: '" << line << "'" << endl;
+	  return false;
+	}
+	else {
+	  string base = line.substr(0,ispos);
+	  string rest = line.substr( ispos+1 );
+	  base = compress(base);
+	  rest = compress(rest);
+	  if ( !rest.empty() ){
+	    string tmp = base;
+	    lowercase(tmp);
+	    if ( tmp == "maxconn" ){
+	      if ( !stringTo( rest, maxConn ) ){
+		cerr << "invalid value for maxconn" << endl;
+		return false;
+	      }
+	    }
+	    else if ( tmp == "port" ){
+	      if ( !stringTo( rest, serverPort ) ){
+		cerr << "invalid value for port" << endl;
+		return false;
+	      }
+	    }
+	    else {
+	      string::size_type spos = 0;
+	      if ( rest[0] == '"' )
+		spos = 1;
+	      string::size_type epos = rest.length()-1;
+	      if ( rest[epos] == '"' ) {
+		--epos;
+	      }
+	      serverConfig[base] = rest.substr( spos, epos-spos+1 );
+	    }
+	  }
+	}
+      }
+      if ( serverPort < 0 ){
+	cerr << "missing 'port=' entry in config file" << endl;
+	return false;
+      }
+      else
+	return true;
+    }
+  }
+
+
+  void MbtServer::createServers(){
+    map<string, string>::const_iterator it = serverConfig.begin();
+    while ( it != serverConfig.end() ){
+      TaggerClass *exp = new TaggerClass();
+      TimblOpts opts(it->second);
+      exp->parse_run_args( opts );
+      exp->set_default_filenames();
+      if ( exp->InitTagging() ){
+	cerr << "Created server " << it->first << endl;
+	experiments[it->first] = exp;
+      }
+      else {
+	cerr << "failed to created a server with name=" << it->first << endl;
+	cerr << "and options = " << it->second << endl;
+	delete exp;
+      }
+      ++it;
+    }
+  }
+
+  inline void usage(){
+    cerr << "usage:  MbtServer --config=config-file"
+	 << endl;
+    cerr << "or      MbtServer -s settings-file -S port"
+	 << endl;
+    cerr << "or      MbtServer {MbtOptions} -S port"
+	 << endl;
+    cerr << "see 'Mbt -h' for all MbtOptions"
+	 << endl;
+    cerr << endl;
+  }
 
   MbtServer::MbtServer( Timbl::TimblOpts& opts ): cur_log("MbtServer", 
 							  StampMessage ){
-    debug = false;
     maxConn = 25;
     serverPort = -1;
     tcp_socket = 0;
     doDaemon = true;
+    dbLevel = LogNormal;
     string val;
     bool mood;
+    if ( opts.Find( "config", val, mood ) ){
+      configFile = val;
+      opts.Delete( "config" );
+    }
     if ( opts.Find( "S", val, mood ) ) {
+      if ( !configFile.empty() ){
+	cerr << "-S option not allowed when --config is used" << endl;
+	usage();
+	exit(1);
+      }
       serverPort = Timbl::stringTo<int>( val );
       if ( serverPort < 1 || serverPort > 32767 ){
 	cerr << "-S option, portnumber invalid: " << serverPort << endl;
+	usage();
 	exit(1);
       }
       opts.Delete( "S" );
     }
-    else {
+    else if ( configFile.empty() ){
       cerr << "missing -S<port> option" << endl;
+      usage();
       exit(1);
     }
     if ( opts.Find( "pidfile", val ) ) {
@@ -93,15 +198,43 @@ namespace Tagger {
       doDaemon = ( val != "no" && val != "NO" && val != "false" && val != "FALSE" );
       opts.Delete( "daemonize" );
     }
-    exp = createServerPimpl( opts );
-    if ( !exp ){
+    if ( opts.Find( 'D', val, mood ) ){
+      if ( val == "LogNormal" )
+	cur_log.setlevel( LogNormal );
+      else if ( val == "LogDebug" )
+	cur_log.setlevel( LogDebug );
+      else if ( val == "LogHeavy" )
+	cur_log.setlevel( LogHeavy );
+      else if ( val == "LogExtreme" )
+	cur_log.setlevel( LogExtreme );
+      else {
+	cerr << "Unknown Debug mode! (-D " << val << ")" << endl;
+      }
+      opts.Delete( 'D' );
+    }
+
+    if ( !configFile.empty() ){
+      getConfig( configFile );
+      createServers();
+    }
+    else {
+      TaggerClass * exp = createPimpl( opts );
+      if ( exp )
+	experiments["default"] = exp;
+    }
+    if ( experiments.empty() ){
       cerr << "starting the server failed." << endl;
+      usage();
       exit(1);
     }
   } 
  
   MbtServer::~MbtServer(){
-    delete exp;
+    map<string, TaggerClass *>::const_iterator it = experiments.begin();
+    while ( it != experiments.end() ){
+      delete it->second;
+      ++it;
+    }
   }
 
   struct childArgs{
@@ -110,6 +243,16 @@ namespace Tagger {
     int maxC;
     TaggerClass *experiment;
   };
+
+  inline void Split( const string& line, string& com, string& rest ){
+    string::const_iterator b_it = line.begin();
+    while ( b_it != line.end() && isspace( *b_it ) ) ++b_it;
+    string::const_iterator m_it = b_it;
+    while ( m_it != line.end() && !isspace( *m_it ) ) ++m_it;
+    com = string( b_it, m_it );
+    while ( m_it != line.end() && isspace( *m_it) ) ++m_it;
+    rest = string( m_it, line.end() );
+  }  
   
   // ***** This is the routine that is executed from a new thread **********
   void *tagChild( void *arg ){
@@ -144,7 +287,70 @@ namespace Tagger {
       fdistream is( Sock->getSockId() );
       fdostream os( Sock->getSockId() );
       os << "Welcome to the Mbt server." << endl;
-      nw = args->experiment->ProcessLines( is, os );
+      string baseName = "default";
+      if ( theServer->experiments.size() > 1 ){
+	map<string,TaggerClass*>::const_iterator it = theServer->experiments.begin();
+	bool first = true;
+	while ( it != theServer->experiments.end() ){
+	  if ( it->first != "default" ){
+	    if ( first ){
+	      os << "available bases: ";
+	      first = false;
+	    }
+	    os << it->first << " ";
+	  }
+	  ++it;
+	}
+	os << endl;
+      }
+      string Line;
+      if ( getline( is, Line ) ){
+	SDBG << "FirstLine='" << Line << "'" << endl;
+	string command, param;
+	string::size_type pos = Line.find('\r');
+	if ( pos != string::npos )
+	  Line.erase(pos,1);
+	SDBG << "Line='" << Line << "'" << endl;
+	Split( Line, command, param );
+	TaggerClass *exp = 0;
+	if ( command == "base" ){
+	  baseName = param;
+	}
+	if ( theServer->experiments.find( baseName ) !=  theServer->experiments.end() ){
+	  exp = theServer->experiments[baseName]->clone( );
+	  exp->setLog( theServer->cur_log, "MbtServer-" + baseName );
+	  if ( baseName != "default" ){
+	    os << "base set to '" << baseName << "'" << endl;
+	    SLOG << "set basename " << baseName << endl;
+	  }
+	}
+	else {
+	  os << "invalid basename '" << baseName << "'" << endl;
+	  SLOG << "invalid basename " << baseName << " rejected" << endl;
+	}
+	if ( exp ){
+	  string result;
+	  if ( command != "base" ){
+	    int num = exp->TagLine( Line, result );
+	    if ( num > 0 ){
+	      nw += num;
+	      os << result << endl;
+	    }
+	  }
+	  while ( getline( is, Line ) ){
+	    string::size_type pos = Line.find('\r');
+	    if ( pos != string::npos )
+	      Line.erase(pos,1);
+	    int num = exp->TagLine( Line, result );
+	    if ( num > 0 ){
+	      nw += num;
+	      os << result << endl;
+	    }
+	    else
+	      break;
+	  }
+	}
+      }
       time( &timeafter );
       SLOG << "Thread " << pthread_self() << ", terminated at: " 
 	  << asctime( localtime( &timeafter ) );
@@ -167,7 +373,7 @@ namespace Tagger {
     signal( SIGINT, StopServerFun );
   }  
   
-  void MbtServer::RunClassicServer(){
+  void MbtServer::RunServer(){
     cerr << "Trying to Start a Server on port: " << serverPort << endl
 	 << "maximum # of simultanious connections: " << maxConn
 	 << endl;
@@ -258,9 +464,7 @@ namespace Tagger {
       // and release its socket handle)
       //
       childArgs *args = new childArgs();
-      args->experiment = exp->clone( );
       args->Mother = this;
-      args->experiment->setLog( this->cur_log );
       args->maxC = maxConn;
       args->socket = newSock;
       pthread_create( &chld_thr, &attr, tagChild, (void *)args );
@@ -268,9 +472,9 @@ namespace Tagger {
     }
   }
   
-  void RunServer( TimblOpts& Opts ){
+  void StartServer( TimblOpts& Opts ){
     MbtServer server( Opts );
-    server.RunClassicServer();
+    server.RunServer();
   }
 
 }
