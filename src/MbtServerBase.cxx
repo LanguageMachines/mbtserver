@@ -245,13 +245,15 @@ namespace Tagger {
   };
 
   inline void Split( const string& line, string& com, string& rest ){
-    string::const_iterator b_it = line.begin();
-    while ( b_it != line.end() && isspace( *b_it ) ) ++b_it;
-    string::const_iterator m_it = b_it;
-    while ( m_it != line.end() && !isspace( *m_it ) ) ++m_it;
-    com = string( b_it, m_it );
-    while ( m_it != line.end() && isspace( *m_it) ) ++m_it;
-    rest = string( m_it, line.end() );
+    string::size_type b_it = line.find( '=' );
+    if ( b_it != string::npos ){
+      com = compress( line.substr( 0, b_it ) );
+      rest = compress( line.substr( b_it+1 ) );
+    }
+    else {
+      rest.clear();
+      com = line;
+    }
   }  
   
   // ***** This is the routine that is executed from a new thread **********
