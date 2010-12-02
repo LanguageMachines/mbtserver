@@ -218,7 +218,7 @@ namespace Tagger {
       createServers();
     }
     else {
-      TaggerClass * exp = createPimpl( opts );
+      TaggerClass *exp = createPimpl( opts );
       if ( exp )
 	experiments["default"] = exp;
     }
@@ -306,6 +306,7 @@ namespace Tagger {
 	os << endl;
       }
       string Line;
+      TaggerClass *exp = 0;
       if ( getline( is, Line ) ){
 	SDBG << "FirstLine='" << Line << "'" << endl;
 	string command, param;
@@ -314,7 +315,6 @@ namespace Tagger {
 	  Line.erase(pos,1);
 	SDBG << "Line='" << Line << "'" << endl;
 	Split( Line, command, param );
-	TaggerClass *exp = 0;
 	if ( command == "base" ){
 	  baseName = param;
 	}
@@ -358,6 +358,7 @@ namespace Tagger {
 	  << asctime( localtime( &timeafter ) );
       SLOG << "Total time used in this thread: " << timeafter - timebefore 
 	   << " sec, " << nw << " words processed " << endl;
+      delete exp;
     }
     // exit this thread
     //
