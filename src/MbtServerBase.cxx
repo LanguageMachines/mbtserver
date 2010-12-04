@@ -323,12 +323,12 @@ namespace Tagger {
 	  exp->setLog( theServer->cur_log, "MbtServer-" + baseName );
 	  if ( baseName != "default" ){
 	    os << "base set to '" << baseName << "'" << endl;
-	    SLOG << "set basename " << baseName << endl;
+	    SLOG << "Set basename " << baseName << endl;
 	  }
 	}
 	else {
 	  os << "invalid basename '" << baseName << "'" << endl;
-	  SLOG << "invalid basename " << baseName << " rejected" << endl;
+	  SLOG << "Invalid basename " << baseName << " rejected" << endl;
 	}
 	if ( exp ){
 	  string result;
@@ -364,7 +364,7 @@ namespace Tagger {
     //
     pthread_mutex_lock( &my_lock );
     service_count--;
-    SLOG << "Socket Total = " << service_count << endl;
+    SLOG << "Socket total = " << service_count << endl;
     pthread_mutex_unlock( &my_lock );
     delete Sock;
   }
@@ -377,8 +377,8 @@ namespace Tagger {
   }  
   
   void MbtServer::RunServer(){
-    cerr << "Trying to Start a Server on port: " << serverPort << endl
-	 << "maximum # of simultanious connections: " << maxConn
+    cerr << "trying to start a Server on port: " << serverPort << endl
+	 << "maximum # of simultaneous connections: " << maxConn
 	 << endl;
     if ( !logFile.empty() ){
       ostream *tmp = new ofstream( logFile.c_str() );
@@ -400,7 +400,7 @@ namespace Tagger {
     else
       start = daemonize( 0, 0 );
     if ( start < 0 ){
-      LOG << "failed to daemonize error= " << strerror(errno) << endl;
+      LOG << "Failed to daemonize error= " << strerror(errno) << endl;
       exit(EXIT_FAILURE);
     };
     if ( !pidFile.empty() ){
@@ -409,7 +409,7 @@ namespace Tagger {
       remove( pidFile.c_str() ) ;
       ofstream pid_file( pidFile.c_str() ) ;
       if ( !pid_file ){
-	LOG << "unable to create pidfile:"<< pidFile << endl;
+	LOG << "Unable to create pidfile:"<< pidFile << endl;
 	LOG << "TimblServer NOT Started" << endl;
 	exit(EXIT_FAILURE);
       }
@@ -435,17 +435,17 @@ namespace Tagger {
     // start up server
     // 
     LOG << "Started Server on port: " << serverPort << endl
-	<< "maximum # of simultanious connections: " << maxConn
+	<< "Maximum # of simultaneous connections: " << maxConn
 	<< endl;
     
     Sockets::ServerSocket server;
     string portString = toString<int>(serverPort);
     if ( !server.connect( portString ) ){
-      LOG << "failed to start Server: " << server.getMessage() << endl;
+      LOG << "Failed to start Server: " << server.getMessage() << endl;
       exit(EXIT_FAILURE);
     }
     if ( !server.listen( maxConn ) < 0 ){
-      LOG << "server: listen failed " << strerror( errno ) << endl;
+      LOG << "Server: listen failed " << strerror( errno ) << endl;
       exit(EXIT_FAILURE);
     };
       
