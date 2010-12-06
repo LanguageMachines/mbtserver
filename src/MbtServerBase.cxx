@@ -255,7 +255,7 @@ namespace Tagger {
       com = line;
     }
   }  
-  
+
   // ***** This is the routine that is executed from a new thread **********
   void *tagChild( void *arg ){
     childArgs *args = (childArgs *)arg;
@@ -333,7 +333,9 @@ namespace Tagger {
 	if ( exp ){
 	  string result;
 	  if ( command != "base" ){
+	    SDBG << "input line '" << Line << "'" << endl;
 	    int num = exp->TagLine( Line, result );
+	    SDBG << "result     '" << result << "'" << endl;
 	    if ( num > 0 ){
 	      nw += num;
 	      os << result << endl;
@@ -343,7 +345,9 @@ namespace Tagger {
 	    string::size_type pos = Line.find('\r');
 	    if ( pos != string::npos )
 	      Line.erase(pos,1);
+	    SDBG << "input line '" << Line << "'" << endl;
 	    int num = exp->TagLine( Line, result );
+	    SDBG << "result     '" << result << "'" << endl;
 	    if ( num > 0 ){
 	      nw += num;
 	      os << result << endl;
