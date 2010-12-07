@@ -320,7 +320,7 @@ namespace Tagger {
 	}
 	if ( theServer->experiments.find( baseName ) !=  theServer->experiments.end() ){
 	  exp = theServer->experiments[baseName]->clone( );
-	  exp->setLog( theServer->cur_log, "MbtServer-" + baseName );
+	  exp->setLog( theServer->cur_log );
 	  if ( baseName != "default" ){
 	    os << "base set to '" << baseName << "'" << endl;
 	    SLOG << "Set basename " << baseName << endl;
