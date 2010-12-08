@@ -371,6 +371,7 @@ namespace Tagger {
     SLOG << "Socket total = " << service_count << endl;
     pthread_mutex_unlock( &my_lock );
     delete Sock;
+    return 0;
   }
 
   void StopServerFun( int Signal ){
