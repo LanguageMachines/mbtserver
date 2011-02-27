@@ -4,7 +4,7 @@ Package: mbtserver
 Version: 0.1
 Revision: 1
 BuildDependsOnly: false
-BuildDepends: timbl-dev, timblserver, mbt (>= 3.2.4), libxml2-dev
+BuildDepends: timbl-dev, timblserver-dev, mbt-dev (>= 3.2.4), libxml2
 DescPackaging: <<
 This package was built on i386 running Darwin / Mac OS X v. 10.6.0,
 using fink 0.29.19-51.
