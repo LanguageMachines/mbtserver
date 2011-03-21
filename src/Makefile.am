@@ -3,6 +3,6 @@
 
 AM_CPPFLAGS = -I@top_srcdir@/include
 
-bin_PROGRAMS = MbtServer
+bin_PROGRAMS = mbtserver
 
-MbtServer_SOURCES = MbtServer.cxx MbtServerBase.cxx
+mbtserver_SOURCES = MbtServer.cxx MbtServerBase.cxx

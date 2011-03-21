@@ -1,3 +1,3 @@
-man1_MANS = MbtServer.1
+man1_MANS = mbtserver.1
 
-EXTRA_DIST = MbtServer.1
+EXTRA_DIST = mbtserver.1
