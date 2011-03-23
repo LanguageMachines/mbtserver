@@ -2,17 +2,17 @@
   $Id$
   $URL$
   Copyright (c) 1998 - 2011
-  ILK  -  Tilburg University
-  CNTS -  University of Antwerp
+  ILK   - Tilburg University
+  CLiPS - University of Antwerp
  
-  This file is part of MbtServer
+  This file is part of mbtserver
 
-  Mbt3 is free software; you can redistribute it and/or modify
+  mbtserver is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 3 of the License, or
   (at your option) any later version.
 
-  Mbt3 is distributed in the hope that it will be useful,
+  mbtserver is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -23,7 +23,7 @@
   For questions and suggestions, see:
       http://ilk.uvt.nl/software.html
   or send mail to:
-      Timbl@uvt.nl
+      timbl@uvt.nl
 */
 
 #include <csignal>
@@ -143,13 +143,13 @@ namespace Tagger {
   }
 
   inline void usage(){
-    cerr << "usage:  MbtServer --config=config-file"
+    cerr << "usage:  mbtserver --config=config-file"
 	 << endl;
-    cerr << "or      MbtServer -s settings-file -S port"
+    cerr << "or      mbtserver -s settings-file -S port"
 	 << endl;
-    cerr << "or      MbtServer {MbtOptions} -S port"
+    cerr << "or      mbtserver {MbtOptions} -S port"
 	 << endl;
-    cerr << "see 'Mbt -h' for all MbtOptions"
+    cerr << "see 'mbt -h' for all MbtOptions"
 	 << endl;
     cerr << endl;
   }

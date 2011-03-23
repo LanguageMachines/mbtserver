@@ -1,18 +1,18 @@
-MbtServer 0.1. (c) ILK/CNTS 1998 - 2011
+mbtserver 0.2. (c) ILK/CNTS 1998 - 2011
 
 Tilburg Memory Based Learner
 
 Induction of Linguistic Knowledge Research Group, Tilburg University and
 Centre for Dutch Language and Speech, University of Antwerp
 
-This is an extension to the thirth main release of MbtServer
+This is an extension to the thirth main release of mbt
 
 While this is NOT a Beta version it may still contain some bugs or
 behave not exactly as documented or expected. Comments and
 bug-reports are welcome at: Timbl@uvt.nl. Updates and more info
 may be found on our website: http://ilk.uvt.nl/ .
 
-MbtServer is distributed under the GNU Public Licence (see the file COPYING)
+mbtserver is distributed under the GNU Public Licence (see the file COPYING)
 
 
 This software has been tested on:
