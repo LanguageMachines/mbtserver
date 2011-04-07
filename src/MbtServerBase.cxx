@@ -157,6 +157,9 @@ namespace MbtServer {
 
   MbtServer::MbtServer( Timbl::TimblOpts& opts ): cur_log("MbtServer", 
 							  StampMessage ){
+    cerr << "mbtserver " << VERSION << endl;
+    cerr << "based on " << Timbl::VersionName() << " and " 
+	 << TimblServer::VersionName() << endl;
     maxConn = 25;
     serverPort = -1;
     tcp_socket = 0;
@@ -164,6 +167,11 @@ namespace MbtServer {
     dbLevel = LogNormal;
     string val;
     bool mood;
+    if ( opts.Find( "h", val, mood ) ||
+	 opts.Find( "help", val, mood ) ){
+      usage();
+      exit( EXIT_SUCCESS );
+    }
     if ( opts.Find( "config", val, mood ) ){
       configFile = val;
       opts.Delete( "config" );
@@ -172,20 +180,20 @@ namespace MbtServer {
       if ( !configFile.empty() ){
 	cerr << "-S option not allowed when --config is used" << endl;
 	usage();
-	exit(1);
+	exit( EXIT_FAILURE );
       }
       serverPort = Timbl::stringTo<int>( val );
       if ( serverPort < 1 || serverPort > 32767 ){
 	cerr << "-S option, portnumber invalid: " << serverPort << endl;
 	usage();
-	exit(1);
+	exit( EXIT_FAILURE );
       }
       opts.Delete( "S" );
     }
     else if ( configFile.empty() ){
       cerr << "missing -S<port> option" << endl;
       usage();
-      exit(1);
+      exit( EXIT_FAILURE );
     }
     if ( opts.Find( "pidfile", val ) ) {
       pidFile = val;
@@ -226,7 +234,7 @@ namespace MbtServer {
     if ( experiments.empty() ){
       cerr << "starting the server failed." << endl;
       usage();
-      exit(1);
+      exit( EXIT_FAILURE );
     }
   } 
  
