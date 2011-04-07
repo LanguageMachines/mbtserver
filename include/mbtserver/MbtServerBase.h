@@ -35,14 +35,15 @@
 #include "timblserver/SocketBasics.h"
 
 namespace MbtServer {
-  class MbtServer {
+
+  class MbtServerClass {
     friend class TaggerClass;
     friend void *tagChild( void * );
   public:
     LogStream cur_log;
-    virtual ~MbtServer();
+    virtual ~MbtServerClass();
     static std::string VersionInfo( bool );
-    MbtServer( Timbl::TimblOpts& );
+    MbtServerClass( Timbl::TimblOpts& );
     void RunServer();
     void createServers();
   protected:

@@ -1,6 +1,7 @@
 0.3 - 2011-04-xx
 
-* moved the class in a new namespace MbtServer
+* moved the class in a new namespace MbtServer, and renamed the MbtServer 
+  class to MbtServerClass
 * added a startup message
 
 0.2 - 2011-03-21

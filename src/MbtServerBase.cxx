@@ -61,7 +61,7 @@ namespace MbtServer {
     }
   }
   
-  bool MbtServer::getConfig( const string& serverConfigFile ){
+  bool MbtServerClass::getConfig( const string& serverConfigFile ){
     maxConn = 25;
     serverPort = -1;
     ifstream is( serverConfigFile.c_str() );
@@ -123,7 +123,7 @@ namespace MbtServer {
   }
 
 
-  void MbtServer::createServers(){
+  void MbtServerClass::createServers(){
     map<string, string>::const_iterator it = serverConfig.begin();
     while ( it != serverConfig.end() ){
       TaggerClass *exp = new TaggerClass();
@@ -155,8 +155,8 @@ namespace MbtServer {
     cerr << endl;
   }
 
-  MbtServer::MbtServer( Timbl::TimblOpts& opts ): cur_log("MbtServer", 
-							  StampMessage ){
+  MbtServerClass::MbtServerClass( Timbl::TimblOpts& opts ):
+    cur_log("MbtServer", StampMessage ){
     cerr << "mbtserver " << VERSION << endl;
     cerr << "based on " << Timbl::VersionName() << " and " 
 	 << TimblServer::VersionName() << endl;
@@ -238,7 +238,7 @@ namespace MbtServer {
     }
   } 
  
-  MbtServer::~MbtServer(){
+  MbtServerClass::~MbtServerClass(){
     map<string, TaggerClass *>::const_iterator it = experiments.begin();
     while ( it != experiments.end() ){
       delete it->second;
@@ -247,7 +247,7 @@ namespace MbtServer {
   }
 
   struct childArgs{
-    MbtServer *Mother;
+    MbtServerClass *Mother;
     Sockets::ServerSocket *socket;
     int maxC;
     TaggerClass *experiment;
@@ -268,7 +268,7 @@ namespace MbtServer {
   // ***** This is the routine that is executed from a new thread **********
   void *tagChild( void *arg ){
     childArgs *args = (childArgs *)arg;
-    MbtServer *theServer = args->Mother;
+    MbtServerClass *theServer = args->Mother;
     Sockets::Socket *Sock = args->socket;
     static int service_count = 0;
     static pthread_mutex_t my_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -390,7 +390,7 @@ namespace MbtServer {
     signal( SIGINT, StopServerFun );
   }  
   
-  void MbtServer::RunServer(){
+  void MbtServerClass::RunServer(){
     cerr << "trying to start a Server on port: " << serverPort << endl
 	 << "maximum # of simultaneous connections: " << maxConn
 	 << endl;
@@ -490,7 +490,7 @@ namespace MbtServer {
   }
   
   void StartServer( TimblOpts& Opts ){
-    MbtServer server( Opts );
+    MbtServerClass server( Opts );
     server.RunServer();
   }
 
