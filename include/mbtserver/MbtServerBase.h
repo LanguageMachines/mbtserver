@@ -34,7 +34,7 @@
 #include "timbl/LogStream.h"
 #include "timblserver/SocketBasics.h"
 
-namespace Tagger {
+namespace MbtServer {
   class MbtServer {
     friend class TaggerClass;
     friend void *tagChild( void * );

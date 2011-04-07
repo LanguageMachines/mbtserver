@@ -42,11 +42,12 @@
 
 using namespace std;
 using namespace Timbl;
+using namespace Tagger;
 
 #define SLOG (*Log(theServer->cur_log))
 #define SDBG (*Dbg(theServer->cur_log))
 
-namespace Tagger {
+namespace MbtServer {
 
   TaggerClass *createPimpl( Timbl::TimblOpts& opts ){
     TaggerClass *exp = new TaggerClass();
@@ -401,9 +402,9 @@ namespace Tagger {
     }
     int start;
     if ( logFile.empty() )
-      start = daemonize( 1, 1 );
+      start = TimblServer::daemonize( 1, 1 );
     else
-      start = daemonize( 0, 0 );
+      start = TimblServer::daemonize( 0, 0 );
     if ( start < 0 ){
       LOG << "Failed to daemonize error= " << strerror(errno) << endl;
       exit(EXIT_FAILURE);
