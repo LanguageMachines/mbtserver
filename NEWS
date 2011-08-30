@@ -1,8 +1,10 @@
-0.3 - 2011-04-xx
+0.3 - 2011-08-30
 
 * moved the class in a new namespace MbtServer, and renamed the MbtServer 
   class to MbtServerClass
 * added a startup message
+* added --version and --help options (depends on Mbt >= 3.2.6)
+
 
 0.2 - 2011-03-21
 

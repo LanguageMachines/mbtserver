@@ -51,7 +51,7 @@ namespace MbtServer {
 
   TaggerClass *createPimpl( Timbl::TimblOpts& opts ){
     TaggerClass *exp = new TaggerClass();
-    exp->parse_run_args( opts );
+    exp->parse_run_args( opts, true );
     exp->set_default_filenames();
     if ( exp->InitTagging() )
       return exp;
@@ -128,7 +128,7 @@ namespace MbtServer {
     while ( it != serverConfig.end() ){
       TaggerClass *exp = new TaggerClass();
       TimblOpts opts(it->second);
-      exp->parse_run_args( opts );
+      exp->parse_run_args( opts, true );
       exp->set_default_filenames();
       if ( exp->InitTagging() ){
 	cerr << "Created server " << it->first << endl;
@@ -154,7 +154,7 @@ namespace MbtServer {
 	 << endl;
     cerr << endl;
   }
-
+  
   MbtServerClass::MbtServerClass( Timbl::TimblOpts& opts ):
     cur_log("MbtServer", StampMessage ){
     cerr << "mbtserver " << VERSION << endl;
@@ -170,6 +170,10 @@ namespace MbtServer {
     if ( opts.Find( "h", val, mood ) ||
 	 opts.Find( "help", val, mood ) ){
       usage();
+      exit( EXIT_SUCCESS );
+    }
+    if ( opts.Find( "V", val, mood ) ||
+	 opts.Find( "version", val, mood ) ){
       exit( EXIT_SUCCESS );
     }
     if ( opts.Find( "config", val, mood ) ){
@@ -236,8 +240,8 @@ namespace MbtServer {
       usage();
       exit( EXIT_FAILURE );
     }
-  } 
- 
+    } 
+    
   MbtServerClass::~MbtServerClass(){
     map<string, TaggerClass *>::const_iterator it = experiments.begin();
     while ( it != experiments.end() ){
