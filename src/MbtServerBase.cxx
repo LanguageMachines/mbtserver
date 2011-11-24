@@ -163,6 +163,8 @@ namespace MbtServer {
     maxConn = 25;
     serverPort = -1;
     tcp_socket = 0;
+    rejCount = 0;
+    accCount = 0;
     doDaemon = true;
     dbLevel = LogNormal;
     string val;
@@ -285,12 +287,14 @@ namespace MbtServer {
     if ( service_count > args->maxC ){
       Sock->write( "Maximum connections exceeded\n" );
       Sock->write( "try again later...\n" );
+      theServer->rejCount++;
       pthread_mutex_unlock( &my_lock );
       cerr << "Thread " << pthread_self() << " refused " << endl;
     }
     else {
       // Greeting message for the client
       //
+      theServer->accCount++;
       pthread_mutex_unlock( &my_lock );
       time_t timebefore, timeafter;
       time( &timebefore );
@@ -382,6 +386,8 @@ namespace MbtServer {
     pthread_mutex_lock( &my_lock );
     service_count--;
     SLOG << "Socket total = " << service_count << endl;
+    SLOG << "total threads handled: " << theServer->accCount + theServer->rejCount 
+	 << " rejected: " << theServer->rejCount << endl;
     pthread_mutex_unlock( &my_lock );
     delete Sock;
     return 0;

@@ -56,6 +56,8 @@ namespace MbtServer {
   private:
     int maxConn;
     int serverPort;
+    size_t accCount;
+    size_t rejCount;
     LogLevel dbLevel;
     Sockets::ServerSocket *tcp_socket;
     std::string configFile;
