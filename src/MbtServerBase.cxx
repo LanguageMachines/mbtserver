@@ -271,6 +271,25 @@ namespace MbtServer {
     }
   }  
 
+  void StopServerFun( int Signal ){
+    if ( Signal == SIGINT ){
+      exit(EXIT_FAILURE);
+    }
+    signal( SIGINT, StopServerFun );
+  }  
+  
+  void BrokenPipeChildFun( int Signal ){
+    if ( Signal == SIGPIPE ){
+      signal( SIGPIPE, BrokenPipeChildFun );
+    }
+  }
+
+  void AfterDaemonFun( int Signal ){
+    if ( Signal == SIGCHLD ){
+      exit(1);
+    }
+  }
+
   // ***** This is the routine that is executed from a new thread **********
   void *tagChild( void *arg ){
     childArgs *args = (childArgs *)arg;
@@ -303,6 +322,7 @@ namespace MbtServer {
       SLOG << "Thread " << pthread_self() << ", Socket number = "
 	  << Sock->getSockId() << ", started at: " 
 	  << asctime( localtime( &timebefore) );
+      signal( SIGPIPE, BrokenPipeChildFun );
       fdistream is( Sock->getSockId() );
       fdostream os( Sock->getSockId() );
       os << "Welcome to the Mbt server." << endl;
@@ -393,13 +413,6 @@ namespace MbtServer {
     return 0;
   }
 
-  void StopServerFun( int Signal ){
-    if ( Signal == SIGINT ){
-      exit(EXIT_FAILURE);
-    }
-    signal( SIGINT, StopServerFun );
-  }  
-  
   void MbtServerClass::RunServer(){
     cerr << "trying to start a Server on port: " << serverPort << endl
 	 << "maximum # of simultaneous connections: " << maxConn
@@ -418,11 +431,14 @@ namespace MbtServer {
 	exit(EXIT_FAILURE);
       }
     }
-    int start;
-    if ( logFile.empty() )
-      start = TimblServer::daemonize( 1, 1 );
-    else
-      start = TimblServer::daemonize( 0, 0 );
+    int start = 0;
+    if ( doDaemon ){
+      signal( SIGCHLD, AfterDaemonFun );
+      if ( logFile.empty() )
+	start = TimblServer::daemonize( 1, 1 );
+      else
+	start = TimblServer::daemonize( 0, 0 );
+    }
     if ( start < 0 ){
       LOG << "Failed to daemonize error= " << strerror(errno) << endl;
       exit(EXIT_FAILURE);

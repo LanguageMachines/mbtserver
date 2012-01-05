@@ -1,3 +1,8 @@
+0.5 - 2012-01-05
+* Bug fix Release:
+*  --daemonize=no option now works
+*  fixed random crashes on broken pipe
+
 0.4 - 2011-12-20
 
   * New release. Depends on recent versions of Timbl et.al.
