@@ -31,7 +31,7 @@
 
 #include "timbl/TimblAPI.h"
 #include "mbt/MbtAPI.h"
-#include "timbl/LogStream.h"
+#include "ticcutils/LogStream.h"
 #include "timblserver/SocketBasics.h"
 
 namespace MbtServer {
