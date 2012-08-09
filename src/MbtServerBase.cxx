@@ -83,8 +83,8 @@ namespace MbtServer {
 	else {
 	  string base = line.substr(0,ispos);
 	  string rest = line.substr( ispos+1 );
-	  base = compress(base);
-	  rest = compress(rest);
+	  base = trim(base);
+	  rest = trim(rest);
 	  if ( !rest.empty() ){
 	    string tmp = base;
 	    lowercase(tmp);
@@ -262,8 +262,8 @@ namespace MbtServer {
   inline void Split( const string& line, string& com, string& rest ){
     string::size_type b_it = line.find( '=' );
     if ( b_it != string::npos ){
-      com = compress( line.substr( 0, b_it ) );
-      rest = compress( line.substr( b_it+1 ) );
+      com = trim( line.substr( 0, b_it ) );
+      rest = trim( line.substr( b_it+1 ) );
     }
     else {
       rest.clear();
