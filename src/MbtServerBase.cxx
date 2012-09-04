@@ -86,8 +86,7 @@ namespace MbtServer {
 	  base = trim(base);
 	  rest = trim(rest);
 	  if ( !rest.empty() ){
-	    string tmp = base;
-	    lowercase(tmp);
+	    string tmp = lowercase(base);
 	    if ( tmp == "maxconn" ){
 	      if ( !stringTo( rest, maxConn ) ){
 		cerr << "invalid value for maxconn" << endl;
