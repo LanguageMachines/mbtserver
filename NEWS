@@ -1,3 +1,6 @@
+0.6 - 2012-10-11
+* now based on libticcutils stuff
+
 0.5 - 2012-01-05
 * Bug fix Release:
 *  --daemonize=no option now works
