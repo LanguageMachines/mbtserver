@@ -88,13 +88,13 @@ namespace MbtServer {
 	  if ( !rest.empty() ){
 	    string tmp = lowercase(base);
 	    if ( tmp == "maxconn" ){
-	      if ( !stringTo( rest, maxConn ) ){
+	      if ( !TiCC::stringTo( rest, maxConn ) ){
 		cerr << "invalid value for maxconn" << endl;
 		return false;
 	      }
 	    }
 	    else if ( tmp == "port" ){
-	      if ( !stringTo( rest, serverPort ) ){
+	      if ( !TiCC::stringTo( rest, serverPort ) ){
 		cerr << "invalid value for port" << endl;
 		return false;
 	      }
@@ -187,7 +187,7 @@ namespace MbtServer {
 	usage();
 	exit( EXIT_FAILURE );
       }
-      serverPort = Timbl::stringTo<int>( val );
+      serverPort = TiCC::stringTo<int>( val );
       if ( serverPort < 1 || serverPort > 32767 ){
 	cerr << "-S option, portnumber invalid: " << serverPort << endl;
 	usage();
