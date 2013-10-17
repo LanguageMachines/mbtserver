@@ -23,8 +23,8 @@ fi
 
 # Checks for programs.
 AC_PROG_CXX( [g++] )
-AC_PROG_RANLIB
 AC_PROG_LIBTOOL
+LT_INIT
 
 # when running tests, use CXX
 AC_LANG([C++])
@@ -60,7 +60,7 @@ if test "x$PKG_CONFIG_PATH" = x; then
      export PKG_CONFIG_PATH=""
 fi
 AC_ARG_WITH(timbl,
-       [  --with-timbl=DIR       use timbl installed in <DIR>; 
+       [  --with-timbl=DIR       use timbl installed in <DIR>;
                note that you can install timbl in a non-default directory with
                ./configure --prefix=<DIR> in the timbl installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
@@ -71,7 +71,7 @@ CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
 AC_ARG_WITH(timblserver,
-       [  --with-timblserver=DIR       use timblserver installed in <DIR>; 
+       [  --with-timblserver=DIR       use timblserver installed in <DIR>;
                note that you can install timbl in a non-default directory with
                ./configure --prefix=<DIR> in the timbl installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"])
@@ -81,7 +81,7 @@ CXXFLAGS="$CXXFLAGS $timblserver_CFLAGS"
 LIBS="$LIBS $timblserver_LIBS"
 
 AC_ARG_WITH(mbt,
-       [  --with-mbt=DIR       use mbt installed in <DIR>; 
+       [  --with-mbt=DIR       use mbt installed in <DIR>;
                note that you can install mbt in a non-default directory with
                ./configure --prefix=<DIR> in the mbt installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"])
@@ -91,7 +91,7 @@ CXXFLAGS="$CXXFLAGS $mbt_CFLAGS"
 LIBS="$LIBS $mbt_LIBS"
 
 AC_ARG_WITH(ticcutils,
-       [  --with-ticcutils=DIR       use ticcutils installed in <DIR>; 
+       [  --with-ticcutils=DIR       use ticcutils installed in <DIR>;
                note that you can install ticcutils in a non-default directory with
                ./configure --prefix=<DIR> in the ticcutils installation directory],
        [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
