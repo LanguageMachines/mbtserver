@@ -4,7 +4,7 @@
   Copyright (c) 1998 - 2014
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbtserver
 
   mbtserver is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@
 #include <cstdio> // for remove()
 #include "config.h"
 #include "timbl/TimblAPI.h"
-#include "timblserver/TimblServerAPI.h"
 #include "timblserver/FdStream.h"
+#include "timblserver/ServerBase.h"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
 #include "mbtserver/MbtServerBase.h"
@@ -60,7 +60,7 @@ namespace MbtServer {
       return 0;
     }
   }
-  
+
   bool MbtServerClass::getConfig( const string& serverConfigFile ){
     maxConn = 25;
     serverPort = -1;
@@ -76,7 +76,7 @@ namespace MbtServer {
 	  continue;
 	string::size_type ispos = line.find('=');
 	if ( ispos == string::npos ){
-	  cerr << "invalid entry in: " << serverConfigFile 
+	  cerr << "invalid entry in: " << serverConfigFile
 	       <<  " offending line: '" << line << "'" << endl;
 	  return false;
 	}
@@ -153,11 +153,11 @@ namespace MbtServer {
 	 << endl;
     cerr << endl;
   }
-  
+
   MbtServerClass::MbtServerClass( Timbl::TimblOpts& opts ):
     cur_log("MbtServer", StampMessage ){
     cerr << "mbtserver " << VERSION << endl;
-    cerr << "based on " << Timbl::VersionName() << " and " 
+    cerr << "based on " << Timbl::VersionName() << " and "
 	 << TimblServer::VersionName() << endl;
     maxConn = 25;
     serverPort = -1;
@@ -241,8 +241,8 @@ namespace MbtServer {
       usage();
       exit( EXIT_FAILURE );
     }
-    } 
-    
+    }
+
   MbtServerClass::~MbtServerClass(){
     map<string, TaggerClass *>::const_iterator it = experiments.begin();
     while ( it != experiments.end() ){
@@ -268,15 +268,15 @@ namespace MbtServer {
       rest.clear();
       com = line;
     }
-  }  
+  }
 
   void StopServerFun( int Signal ){
     if ( Signal == SIGINT ){
       exit(EXIT_FAILURE);
     }
     signal( SIGINT, StopServerFun );
-  }  
-  
+  }
+
   void BrokenPipeChildFun( int Signal ){
     if ( Signal == SIGPIPE ){
       signal( SIGPIPE, BrokenPipeChildFun );
@@ -319,7 +319,7 @@ namespace MbtServer {
       // report connection to the server terminal
       //
       SLOG << "Thread " << pthread_self() << ", Socket number = "
-	  << Sock->getSockId() << ", started at: " 
+	  << Sock->getSockId() << ", started at: "
 	  << asctime( localtime( &timebefore) );
       signal( SIGPIPE, BrokenPipeChildFun );
       fdistream is( Sock->getSockId() );
@@ -394,9 +394,9 @@ namespace MbtServer {
 	}
       }
       time( &timeafter );
-      SLOG << "Thread " << pthread_self() << ", terminated at: " 
+      SLOG << "Thread " << pthread_self() << ", terminated at: "
 	  << asctime( localtime( &timeafter ) );
-      SLOG << "Total time used in this thread: " << timeafter - timebefore 
+      SLOG << "Total time used in this thread: " << timeafter - timebefore
 	   << " sec, " << nw << " words processed " << endl;
       delete exp;
     }
@@ -405,7 +405,7 @@ namespace MbtServer {
     pthread_mutex_lock( &my_lock );
     service_count--;
     SLOG << "Socket total = " << service_count << endl;
-    SLOG << "total threads handled: " << theServer->accCount + theServer->rejCount 
+    SLOG << "total threads handled: " << theServer->accCount + theServer->rejCount
 	 << " rejected: " << theServer->rejCount << endl;
     pthread_mutex_unlock( &my_lock );
     delete Sock;
@@ -422,7 +422,7 @@ namespace MbtServer {
 	cerr << "switching logging to file " << logFile << endl;
 	cur_log.associate( *tmp );
 	cur_log.message( "MbtServer:" );
-	LOG << "Started logging " << endl;	
+	LOG << "Started logging " << endl;
       }
       else {
 	cerr << "unable to create logfile: " << logFile << endl;
@@ -457,7 +457,7 @@ namespace MbtServer {
 	pid_file << pid << endl;
       }
     }
-    
+
       // set the attributes
     pthread_attr_t attr;
     if ( pthread_attr_init(&attr) ||
@@ -468,15 +468,15 @@ namespace MbtServer {
     //
     // setup Signal handling to abort the server.
     signal( SIGINT, StopServerFun );
-    
+
     pthread_t chld_thr;
-    
+
     // start up server
-    // 
+    //
     LOG << "Started Server on port: " << serverPort << endl
 	<< "Maximum # of simultaneous connections: " << maxConn
 	<< endl;
-    
+
     Sockets::ServerSocket server;
     string portString = toString<int>(serverPort);
     if ( !server.connect( portString ) ){
@@ -487,7 +487,7 @@ namespace MbtServer {
       LOG << "Server: listen failed " << strerror( errno ) << endl;
       exit(EXIT_FAILURE);
     };
-      
+
     while(true){ // waiting for connections loop
       Sockets::ServerSocket *newSock = new Sockets::ServerSocket();
       if ( !server.accept( *newSock ) ){
@@ -500,8 +500,8 @@ namespace MbtServer {
       }
       LOG << "Accepting Connection " << newSock->getSockId()
 	  << " from remote host: " << newSock->getClientName() << endl;
-      
-      // create a new thread to process the incoming request 
+
+      // create a new thread to process the incoming request
       // (The thread will terminate itself when done processing
       // and release its socket handle)
       //
@@ -510,10 +510,10 @@ namespace MbtServer {
       args->maxC = maxConn;
       args->socket = newSock;
       pthread_create( &chld_thr, &attr, tagChild, (void *)args );
-      // the server is now free to accept another socket request 
+      // the server is now free to accept another socket request
     }
   }
-  
+
   void StartServer( TimblOpts& Opts ){
     MbtServerClass server( Opts );
     server.RunServer();
