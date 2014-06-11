@@ -1,3 +1,6 @@
+0.8 - 2014-06-xx
+* now build on NEW timblserver API
+
 0.7 - 2013-04-03
 * more ticctutils stuff is used
 
@@ -15,7 +18,7 @@
 
 0.3 - 2011-08-30
 
-* moved the class in a new namespace MbtServer, and renamed the MbtServer 
+* moved the class in a new namespace MbtServer, and renamed the MbtServer
   class to MbtServerClass
 * added a startup message
 * added --version and --help options (depends on Mbt >= 3.2.6)
