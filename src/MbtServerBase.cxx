@@ -64,7 +64,7 @@ namespace MbtServer {
   bool MbtServerClass::getConfig( const string& serverConfigFile ){
     maxConn = 25;
     serverPort = -1;
-    ifstream is( serverConfigFile.c_str() );
+    ifstream is( serverConfigFile );
     if ( !is ){
       cerr << "problem reading " << serverConfigFile << endl;
       return false;
@@ -417,7 +417,7 @@ namespace MbtServer {
 	 << "maximum # of simultaneous connections: " << maxConn
 	 << endl;
     if ( !logFile.empty() ){
-      ostream *tmp = new ofstream( logFile.c_str() );
+      ostream *tmp = new ofstream( logFile );
       if ( tmp && tmp->good() ){
 	cerr << "switching logging to file " << logFile << endl;
 	cur_log.associate( *tmp );
@@ -446,7 +446,7 @@ namespace MbtServer {
       // we have a liftoff!
       // signal it to the world
       remove( pidFile.c_str() ) ;
-      ofstream pid_file( pidFile.c_str() ) ;
+      ofstream pid_file( pidFile ) ;
       if ( !pid_file ){
 	LOG << "Unable to create pidfile:"<< pidFile << endl;
 	LOG << "TimblServer NOT Started" << endl;
