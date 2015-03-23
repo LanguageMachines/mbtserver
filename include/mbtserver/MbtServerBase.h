@@ -5,7 +5,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbtserver
 
   mbtserver is free software; you can redistribute it and/or modify
