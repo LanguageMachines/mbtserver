@@ -483,7 +483,7 @@ namespace MbtServer {
       LOG << "Failed to start Server: " << server.getMessage() << endl;
       exit(EXIT_FAILURE);
     }
-    if ( !server.listen( maxConn ) < 0 ){
+    if ( !server.listen( maxConn ) ){
       LOG << "Server: listen failed " << strerror( errno ) << endl;
       exit(EXIT_FAILURE);
     };
