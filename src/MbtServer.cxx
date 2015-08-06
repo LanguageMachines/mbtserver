@@ -4,7 +4,7 @@
   Copyright (c) 1998 - 2015
   ILK   - Tilburg University
   CLiPS - University of Antwerp
- 
+
   This file is part of mbtserver
 
   mbtserver is free software; you can redistribute it and/or modify
@@ -27,11 +27,13 @@
 */
 
 #include <string>
+#include <iostream>
 #include "mbtserver/MbtServerBase.h"
 
-int main(int argc, char *argv[]) {
-  TimblOpts opts( argc, argv );
-  MbtServer::StartServer( opts );   
+int main( int argc, const char *argv[]) {
+  TiCC::CL_Options opts( mbt_short_opts + "S:",
+			 mbt_long_opts + ",config:,logfile:,pidfile:,daemonize:" );
+  opts.init( argc, argv );
+  MbtServer::StartServer( opts );
   exit(EXIT_SUCCESS);
 }
-

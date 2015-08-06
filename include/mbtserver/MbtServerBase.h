@@ -29,7 +29,6 @@
 #ifndef MBTSERVER_H
 #define MBTSERVER_H
 
-#include "timbl/TimblAPI.h"
 #include "mbt/MbtAPI.h"
 #include "ticcutils/LogStream.h"
 #include "timblserver/SocketBasics.h"
@@ -43,7 +42,7 @@ namespace MbtServer {
     LogStream cur_log;
     virtual ~MbtServerClass();
     static std::string VersionInfo( bool );
-    MbtServerClass( Timbl::TimblOpts& );
+    MbtServerClass( TiCC::CL_Options& );
     void RunServer();
     void createServers();
   protected:
@@ -64,6 +63,6 @@ namespace MbtServer {
     std::map<std::string, std::string> serverConfig;
   };
 
-  void StartServer( Timbl::TimblOpts& );
+  void StartServer( TiCC::CL_Options& );
 }
 #endif

@@ -31,7 +31,6 @@
 #include <string>
 #include <cstdio> // for remove()
 #include "config.h"
-#include "timbl/TimblAPI.h"
 #include "timblserver/FdStream.h"
 #include "timblserver/ServerBase.h"
 #include "mbt/Logging.h"
@@ -49,7 +48,7 @@ using namespace Tagger;
 
 namespace MbtServer {
 
-  TaggerClass *createPimpl( Timbl::TimblOpts& opts ){
+  TaggerClass *createPimpl( TiCC::CL_Options& opts ){
     TaggerClass *exp = new TaggerClass();
     exp->parse_run_args( opts, true );
     exp->set_default_filenames();
@@ -126,7 +125,8 @@ namespace MbtServer {
     map<string, string>::const_iterator it = serverConfig.begin();
     while ( it != serverConfig.end() ){
       TaggerClass *exp = new TaggerClass();
-      TimblOpts opts(it->second);
+      TiCC::CL_Options opts( mbt_short_opts, mbt_long_opts );
+      opts.init( it->second );
       exp->parse_run_args( opts, true );
       exp->set_default_filenames();
       if ( exp->InitTagging() ){
@@ -154,7 +154,7 @@ namespace MbtServer {
     cerr << endl;
   }
 
-  MbtServerClass::MbtServerClass( Timbl::TimblOpts& opts ):
+  MbtServerClass::MbtServerClass( TiCC::CL_Options& opts ):
     cur_log("MbtServer", StampMessage ){
     cerr << "mbtserver " << VERSION << endl;
     cerr << "based on " << Timbl::VersionName() << " and "
@@ -167,21 +167,19 @@ namespace MbtServer {
     doDaemon = true;
     dbLevel = LogNormal;
     string val;
-    bool mood;
-    if ( opts.Find( "h", val, mood ) ||
-	 opts.Find( "help", val, mood ) ){
+    if ( opts.is_present( "h" ) ||
+	 opts.is_present( "help" ) ){
       usage();
       exit( EXIT_SUCCESS );
     }
-    if ( opts.Find( "V", val, mood ) ||
-	 opts.Find( "version", val, mood ) ){
+    if ( opts.is_present( "V" ) ||
+	 opts.is_present( "version" ) ){
       exit( EXIT_SUCCESS );
     }
-    if ( opts.Find( "config", val, mood ) ){
+    if ( opts.extract( "config", val ) ){
       configFile = val;
-      opts.Delete( "config" );
     }
-    if ( opts.Find( "S", val, mood ) ) {
+    if ( opts.extract( "S", val ) ) {
       if ( !configFile.empty() ){
 	cerr << "-S option not allowed when --config is used" << endl;
 	usage();
@@ -193,26 +191,22 @@ namespace MbtServer {
 	usage();
 	exit( EXIT_FAILURE );
       }
-      opts.Delete( "S" );
     }
     else if ( configFile.empty() ){
       cerr << "missing -S<port> option" << endl;
       usage();
       exit( EXIT_FAILURE );
     }
-    if ( opts.Find( "pidfile", val ) ) {
+    if ( opts.extract( "pidfile", val ) ) {
       pidFile = val;
-      opts.Delete( "pidfile" );
     }
-    if ( opts.Find( "logfile", val ) ) {
+    if ( opts.extract( "logfile", val ) ) {
       logFile = val;
-      opts.Delete( "logfile" );
     }
-    if ( opts.Find( "daemonize", val ) ) {
+    if ( opts.extract( "daemonize", val ) ) {
       doDaemon = ( val != "no" && val != "NO" && val != "false" && val != "FALSE" );
-      opts.Delete( "daemonize" );
     }
-    if ( opts.Find( 'D', val, mood ) ){
+    if ( opts.extract( 'D', val ) ){
       if ( val == "LogNormal" )
 	cur_log.setlevel( LogNormal );
       else if ( val == "LogDebug" )
@@ -224,7 +218,6 @@ namespace MbtServer {
       else {
 	cerr << "Unknown Debug mode! (-D " << val << ")" << endl;
       }
-      opts.Delete( 'D' );
     }
 
     if ( !configFile.empty() ){
@@ -241,7 +234,7 @@ namespace MbtServer {
       usage();
       exit( EXIT_FAILURE );
     }
-    }
+  }
 
   MbtServerClass::~MbtServerClass(){
     map<string, TaggerClass *>::const_iterator it = experiments.begin();
@@ -514,8 +507,8 @@ namespace MbtServer {
     }
   }
 
-  void StartServer( TimblOpts& Opts ){
-    MbtServerClass server( Opts );
+  void StartServer( TiCC::CL_Options& opts ){
+    MbtServerClass server( opts );
     server.RunServer();
   }
 
