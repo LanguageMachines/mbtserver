@@ -31,36 +31,25 @@
 
 #include "mbt/MbtAPI.h"
 #include "ticcutils/LogStream.h"
-#include "timblserver/SocketBasics.h"
+#include "timblserver/FdStream.h"
+#include "timblserver/ServerBase.h"
+//#include "timblserver/SocketBasics.h"
 
 namespace MbtServer {
+  using namespace TimblServer;
 
-  class MbtServerClass {
+  class MbtServerClass : public TcpServerBase {
     friend class TaggerClass;
     friend void *tagChild( void * );
   public:
-    LogStream cur_log;
+    MbtServerClass( TiCC::Configuration *, TiCC::CL_Options& );
     virtual ~MbtServerClass();
     static std::string VersionInfo( bool );
-    MbtServerClass( TiCC::CL_Options& );
+    void callback( childArgs* );
     void RunServer();
-    void createServers();
+    void createServers( TiCC::Configuration& );
   protected:
-    bool getConfig( const std::string& );
-    Sockets::ServerSocket *TcpSocket() const { return tcp_socket; };
     std::map<std::string, TaggerClass *> experiments;
-    std::string logFile;
-    std::string pidFile;
-    bool doDaemon;
-  private:
-    int maxConn;
-    int serverPort;
-    size_t accCount;
-    size_t rejCount;
-    LogLevel dbLevel;
-    Sockets::ServerSocket *tcp_socket;
-    std::string configFile;
-    std::map<std::string, std::string> serverConfig;
   };
 
   void StartServer( TiCC::CL_Options& );
