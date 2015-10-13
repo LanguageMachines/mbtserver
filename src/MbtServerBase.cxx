@@ -60,7 +60,7 @@ namespace MbtServer {
     }
   }
 
-  void MbtServerClass::createServers( TiCC::Configuration& c ){
+  void MbtServerClass::createServers( const TiCC::Configuration& c ){
     map<string,string> allvals;
     if ( c.hasSection("experiments") )
       allvals = c.lookUpAll("experiments");
@@ -117,15 +117,18 @@ namespace MbtServer {
     cerr << endl;
   }
 
-  MbtServerClass::MbtServerClass( TiCC::Configuration *c,
+  MbtServerClass::MbtServerClass( const TiCC::Configuration& c,
 				  TiCC::CL_Options& opts ):
-    TcpServerBase( c ) {
+    TcpServerBase( &c ) {
     myLog.message("MbtServer");
+    myLog.setstamp(StampMessage);
+    if ( doDebug() )
+      myLog.setlevel( LogHeavy );
     cerr << "mbtserver " << VERSION << endl;
     cerr << "based on " << Timbl::VersionName() << " and "
 	 << TimblServer::VersionName() << endl;
     if ( opts.empty() ){
-      createServers( *c );
+      createServers( c );
     }
     else {
       TaggerClass *exp = createPimpl( opts );
@@ -146,6 +149,7 @@ namespace MbtServer {
       delete it->second;
       ++it;
     }
+    delete config;
   }
 
   inline void Split( const string& line, string& com, string& rest ){
@@ -157,25 +161,6 @@ namespace MbtServer {
     else {
       rest.clear();
       com = line;
-    }
-  }
-
-  void StopServerFun( int Signal ){
-    if ( Signal == SIGINT ){
-      exit(EXIT_FAILURE);
-    }
-    signal( SIGINT, StopServerFun );
-  }
-
-  void BrokenPipeChildFun( int Signal ){
-    if ( Signal == SIGPIPE ){
-      signal( SIGPIPE, BrokenPipeChildFun );
-    }
-  }
-
-  void AfterDaemonFun( int Signal ){
-    if ( Signal == SIGCHLD ){
-      exit(1);
     }
   }
 
@@ -219,7 +204,6 @@ namespace MbtServer {
       }
       if ( experiments->find( baseName ) != experiments->end() ){
 	exp = (*experiments)[baseName]->clone( );
-	exp->setLog( theServer->myLog );
 	if ( baseName != "default" ){
 	  args->os() << "base set to '" << baseName << "'" << endl;
 	  SLOG << "Set basename " << baseName << endl;
@@ -256,12 +240,8 @@ namespace MbtServer {
 	}
       }
     }
-    SLOG << "Thread " << pthread_self() << ", terminated: " << endl;
-    //    delete exp;
-    //    delete Sock;
-  }
-
-  void MbtServerClass::RunServer(){
+    SLOG << "Total: " << nw << " words processed " << endl;
+    delete exp;
   }
 
   void StartServer( TiCC::CL_Options& opts ){
@@ -275,7 +255,7 @@ namespace MbtServer {
       exit( EXIT_SUCCESS );
     }
     Configuration *config = initServerConfig( opts );
-    MbtServerClass server( config, opts );
+    MbtServerClass server( *config, opts );
     server.Run();
   }
 

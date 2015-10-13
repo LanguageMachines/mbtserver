@@ -30,24 +30,20 @@
 #define MBTSERVER_H
 
 #include "mbt/MbtAPI.h"
-#include "ticcutils/LogStream.h"
 #include "timblserver/FdStream.h"
 #include "timblserver/ServerBase.h"
-//#include "timblserver/SocketBasics.h"
 
 namespace MbtServer {
   using namespace TimblServer;
 
   class MbtServerClass : public TcpServerBase {
     friend class TaggerClass;
-    friend void *tagChild( void * );
   public:
-    MbtServerClass( TiCC::Configuration *, TiCC::CL_Options& );
+    MbtServerClass( const TiCC::Configuration&, TiCC::CL_Options& );
     virtual ~MbtServerClass();
     static std::string VersionInfo( bool );
     void callback( childArgs* );
-    void RunServer();
-    void createServers( TiCC::Configuration& );
+    void createServers( const TiCC::Configuration& );
   protected:
     std::map<std::string, TaggerClass *> experiments;
   };
