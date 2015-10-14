@@ -39,12 +39,12 @@ namespace MbtServer {
   class MbtServerClass : public TcpServerBase {
     friend class TaggerClass;
   public:
-    MbtServerClass( const TiCC::Configuration&, TiCC::CL_Options& );
+    MbtServerClass( const TiCC::Configuration * );
     virtual ~MbtServerClass();
     static std::string VersionInfo( bool );
+  private:
     void callback( childArgs* );
-    void createServers( const TiCC::Configuration& );
-  protected:
+    void createServers( const TiCC::Configuration * );
     std::map<std::string, TaggerClass *> experiments;
   };
 
