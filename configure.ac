@@ -70,16 +70,6 @@ PKG_CHECK_MODULES([timbl], [timbl >= 6.4.4] )
 CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
 LIBS="$LIBS $timbl_LIBS"
 
-AC_ARG_WITH(timblserver,
-       [  --with-timblserver=DIR       use timblserver installed in <DIR>;
-               note that you can install timbl in a non-default directory with
-               ./configure --prefix=<DIR> in the timbl installation directory],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"])
-#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([timblserver], [timblserver >= 1.10] )
-CXXFLAGS="$CXXFLAGS $timblserver_CFLAGS"
-LIBS="$LIBS $timblserver_LIBS"
-
 AC_ARG_WITH(mbt,
        [  --with-mbt=DIR       use mbt installed in <DIR>;
                note that you can install mbt in a non-default directory with

@@ -30,8 +30,8 @@
 #define MBTSERVER_H
 
 #include "mbt/MbtAPI.h"
-#include "timblserver/FdStream.h"
-#include "timblserver/ServerBase.h"
+#include "ticcutils/FdStream.h"
+#include "ticcutils/ServerBase.h"
 
 namespace MbtServer {
   using namespace TimblServer;
