@@ -31,8 +31,8 @@
 #include <string>
 #include <cstdio> // for remove()
 #include "config.h"
-#include "timblserver/FdStream.h"
-#include "timblserver/ServerBase.h"
+#include "ticcutils/FdStream.h"
+#include "ticcutils/ServerBase.h"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
 #include "mbtserver/MbtServerBase.h"
