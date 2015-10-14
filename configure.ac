@@ -59,26 +59,6 @@ PKG_PROG_PKG_CONFIG
 if test "x$PKG_CONFIG_PATH" = x; then
      export PKG_CONFIG_PATH=""
 fi
-AC_ARG_WITH(timbl,
-       [  --with-timbl=DIR       use timbl installed in <DIR>;
-               note that you can install timbl in a non-default directory with
-               ./configure --prefix=<DIR> in the timbl installation directory],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
-#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([timbl], [timbl >= 6.4.4] )
-CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
-LIBS="$LIBS $timbl_LIBS"
-
-AC_ARG_WITH(mbt,
-       [  --with-mbt=DIR       use mbt installed in <DIR>;
-               note that you can install mbt in a non-default directory with
-               ./configure --prefix=<DIR> in the mbt installation directory],
-       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"])
-#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
-PKG_CHECK_MODULES([mbt], [mbt >= 3.2.13] )
-CXXFLAGS="$CXXFLAGS $mbt_CFLAGS"
-LIBS="$LIBS $mbt_LIBS"
 
 AC_ARG_WITH(ticcutils,
        [  --with-ticcutils=DIR       use ticcutils installed in <DIR>;
@@ -90,6 +70,27 @@ AC_ARG_WITH(ticcutils,
 PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.9] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
+
+AC_ARG_WITH(timbl,
+       [  --with-timbl=DIR       use timbl installed in <DIR>;
+               note that you can install timbl in a non-default directory with
+               ./configure --prefix=<DIR> in the timbl installation directory],
+       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
+       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
+PKG_CHECK_MODULES([timbl], [timbl >= 6.4.4] )
+CXXFLAGS="$CXXFLAGS $timbl_CFLAGS"
+LIBS="$LIBS $timbl_LIBS"
+
+AC_ARG_WITH(mbt,
+       [  --with-mbt=DIR       use mbt installed in <DIR>;
+               note that you can install mbt in a non-default directory with
+               ./configure --prefix=<DIR> in the mbt installation directory],
+       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$withval/lib/pkgconfig"],
+       [PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$prefix/lib/pkgconfig"])
+#  AC_MSG_NOTICE( [pkg-config search path: $PKG_CONFIG_PATH] )
+PKG_CHECK_MODULES([mbt], [mbt >= 3.2.13] )
+CXXFLAGS="$CXXFLAGS $mbt_CFLAGS"
+LIBS="$LIBS $mbt_LIBS"
 
 AC_CONFIG_FILES([
   Makefile
