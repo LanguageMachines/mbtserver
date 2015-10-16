@@ -30,7 +30,6 @@
 #define MBTSERVER_H
 
 #include "mbt/MbtAPI.h"
-#include "ticcutils/FdStream.h"
 #include "ticcutils/ServerBase.h"
 
 namespace MbtServer {

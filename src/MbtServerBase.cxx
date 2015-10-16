@@ -31,7 +31,6 @@
 #include <string>
 #include <cstdio> // for remove()
 #include "config.h"
-#include "ticcutils/FdStream.h"
 #include "ticcutils/ServerBase.h"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
