@@ -1,19 +1,19 @@
-Mbt 3.2 (c) CLS/ILK/CNTS 1998-2015
+MbtServer 0.9 (c) CLS/ILK/CNTS 1998-2015
 
  Tilburg Memory Based Tagger
- https://github.com/LanguageMachines/mbt
+ https://github.com/LanguageMachines/mbtserver
 
     Centre for Language Studies, Radboud University Nijmegen
     Induction of Linguistic Knowledge Research Group, Tilburg University and
     Centre for Dutch Language and Speech, University of Antwerp
 
-This is an extension to the thirth main release of Mbt. This is the server extension.
+This is the server extension of Mbt (http://languagemachines.github.io/mbt/)
 
 Comments and bug-reports are welcome on our issue tracker at
 https://github.com/LanguageMachines/mbtserver/issues , or by mailing
-a.vandenbosch (at) let.ru.nl .
+lamasoftware (at) science.ru.nl .
 
-Mbt is distributed under the GNU Public Licence v3 (see the file COPYING)
+MbtServer is distributed under the GNU Public Licence v3 (see the file COPYING)
 
 
 This software has been tested on:
