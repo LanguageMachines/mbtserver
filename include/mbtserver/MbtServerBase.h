@@ -1,8 +1,6 @@
 /*
-  $Id$
-  $URL$
-
-  Copyright (c) 1998 - 2015
+  Copyright (c) 1998 - 2016
+  CLST  - Radboud University
   ILK   - Tilburg University
   CLiPS - University of Antwerp
 
@@ -22,9 +20,10 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 
   For questions and suggestions, see:
-      http://ilk.uvt.nl/software.html
+      https://github.com/LanguageMachines/mbt/issues
   or send mail to:
-      timbl@uvt.nl
+      lamasoftware (at ) science.ru.nl
+
 */
 #ifndef MBTSERVER_H
 #define MBTSERVER_H
@@ -36,7 +35,7 @@ namespace MbtServer {
   using namespace TimblServer;
 
   class MbtServerClass : public TcpServerBase {
-    friend class TaggerClass;
+    friend class Tagger::TaggerClass;
   public:
     MbtServerClass( const TiCC::Configuration * );
     virtual ~MbtServerClass();
@@ -44,7 +43,7 @@ namespace MbtServer {
   private:
     void callback( childArgs* );
     void createServers( const TiCC::Configuration * );
-    std::map<std::string, TaggerClass *> experiments;
+    std::map<std::string, Tagger::TaggerClass *> experiments;
   };
 
   void StartServer( TiCC::CL_Options& );
