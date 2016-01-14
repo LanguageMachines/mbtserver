@@ -1,3 +1,10 @@
+0.10 - 2016-01-14
+[Ko van der Sloot]
+* moved repository to GitHub
+* added Travis support
+* now based on basic Server stuff from ticcutils
+* a lot of small bug fixes
+
 0.9 - 2014-09-23
 [Ko van der Sloot]
 * release
