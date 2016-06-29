@@ -60,6 +60,7 @@ namespace MbtServer {
       while ( it != allvals.end() ){
 	if ( it->first == "port" ||
 	     it->first == "protocol" ||
+	     it->first == "configDir" ||
 	     it->first == "logfile" ||
 	     it->first == "debug" ||
 	     it->first == "pidfile" ||
