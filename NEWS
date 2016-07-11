@@ -1,3 +1,8 @@
+0.11 - 2016-07-11
+[Ko van der Sloot]
+Bug fix:
+* also work with more recent ticcutils
+
 0.10 - 2016-01-14
 [Ko van der Sloot]
 * moved repository to GitHub
