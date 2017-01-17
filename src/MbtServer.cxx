@@ -32,7 +32,7 @@
 
 int main( int argc, const char *argv[]) {
   TiCC::CL_Options opts( Tagger::mbt_short_opts + "S:",
-			 Tagger::mbt_long_opts + ",config:,logfile:,pidfile:,daemonize:" );
+			 Tagger::mbt_long_opts + ",debug,config:,logfile:,pidfile:,daemonize:" );
   opts.init( argc, argv );
   MbtServer::StartServer( opts );
   exit(EXIT_SUCCESS);
