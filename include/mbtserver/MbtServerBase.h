@@ -37,7 +37,7 @@ namespace MbtServer {
   class MbtServerClass : public TcpServerBase {
     friend class Tagger::TaggerClass;
   public:
-    MbtServerClass( const TiCC::Configuration * );
+    explicit MbtServerClass( const TiCC::Configuration * );
     virtual ~MbtServerClass();
     static std::string VersionInfo( bool );
   private:
