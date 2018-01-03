@@ -42,7 +42,7 @@ matrix:
         - COMPILER=clang++
         - CXXFLAGS="-fopenmp=libiomp5"
 
-   - os: osx
+    - os: osx
       compiler: gcc
       env: COMPILER=g++
 
