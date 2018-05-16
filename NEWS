@@ -1,3 +1,10 @@
+0.12 - 2016-05-16
+[Ko van der Sloot]
+Maintenance release:
+- configure/build/test stuff
+- typo in man page
+- MbtServer: --debug is also a valid option
+
 0.11 - 2016-07-11
 [Ko van der Sloot]
 Bug fix:
