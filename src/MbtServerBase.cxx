@@ -191,29 +191,56 @@ namespace MbtServer {
 	SLOG << "Invalid basename " << baseName << " rejected" << endl;
       }
       if ( exp ){
-	string result;
-	if ( command != "base" ){
-	  SDBG << "input line '" << Line << "'" << endl;
-	  int num = exp->TagLine( Line, result );
+	if ( exp->enriched() ){
+	  string text_block;
+	  if ( command != "base" ){
+	    SDBG << "input line '" << Line << "'" << endl;
+	    text_block += Line + "\n";
+	  }
+	  while ( getline( args->is(), Line ) ){
+	    string::size_type pos = Line.find('\r');
+	    if ( pos != string::npos )
+	      Line.erase(pos,1);
+	    SDBG << "input line '" << Line << "'" << endl;
+	    if ( Line == "<utt>" ){
+	      break;
+	    }
+	    text_block += Line + "\n";
+	  }
+	  string result;
+	  SDBG << "call TagLine '" << text_block << "'" << endl;
+	  int num = exp->TagLine( text_block, result );
 	  SDBG << "result     '" << result << "'" << endl;
 	  if ( num > 0 ){
 	    nw += num;
 	    args->os() << result << endl;
 	  }
 	}
-	while ( getline( args->is(), Line ) ){
-	  string::size_type pos = Line.find('\r');
-	  if ( pos != string::npos )
-	    Line.erase(pos,1);
-	  SDBG << "input line '" << Line << "'" << endl;
-	  int num = exp->TagLine( Line, result );
-	  SDBG << "result     '" << result << "'" << endl;
-	  if ( num > 0 ){
-	    nw += num;
-	    args->os() << result << endl;
+	else {
+	  string result;
+	  if ( command != "base" ){
+	    SDBG << "input line '" << Line << "'" << endl;
+	    int num = exp->TagLine( Line, result );
+	    SDBG << "result     '" << result << "'" << endl;
+	    if ( num > 0 ){
+	      nw += num;
+	      args->os() << result << endl;
+	    }
 	  }
-	  else
-	    break;
+	  while ( getline( args->is(), Line ) ){
+	    string::size_type pos = Line.find('\r');
+	    if ( pos != string::npos )
+	      Line.erase(pos,1);
+	    SDBG << "input line '" << Line << "'" << endl;
+	    int num = exp->TagLine( Line, result );
+	    SDBG << "result     '" << result << "'" << endl;
+	    if ( num > 0 ){
+	      nw += num;
+	      args->os() << result << endl;
+	    }
+	    else
+	      break;
+	  }
 	}
       }
     }
