@@ -31,8 +31,8 @@
 #include "mbtserver/MbtServerBase.h"
 
 int main( int argc, const char *argv[]) {
-  TiCC::CL_Options opts( Tagger::mbt_short_opts + "S:",
-			 Tagger::mbt_long_opts + ",debug,config:,logfile:,pidfile:,daemonize:" );
+  TiCC::CL_Options opts( Tagger::mbt_short_opts + TimblServer::serv_short_opts,
+			 Tagger::mbt_long_opts + TimblServer::serv_long_opts);
   opts.init( argc, argv );
   MbtServer::StartServer( opts );
   exit(EXIT_SUCCESS);
