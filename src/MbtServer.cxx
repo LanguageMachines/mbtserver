@@ -32,8 +32,14 @@
 
 int main( int argc, const char *argv[]) {
   TiCC::CL_Options opts( Tagger::mbt_short_opts + TimblServer::serv_short_opts,
-			 Tagger::mbt_long_opts + TimblServer::serv_long_opts);
+			 Tagger::mbt_long_opts + TimblServer::serv_long_opts
+			 + ",json" );
   opts.init( argc, argv );
-  MbtServer::StartServer( opts );
+  if ( opts.extract("json") ){
+    MbtServer::StartJSONServer( opts );
+  }
+  else {
+    MbtServer::StartServer( opts );
+  }
   exit(EXIT_SUCCESS);
 }

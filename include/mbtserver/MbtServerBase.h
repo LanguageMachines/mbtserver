@@ -46,6 +46,19 @@ namespace MbtServer {
     std::map<std::string, Tagger::TaggerClass *> experiments;
   };
 
+  class MbtJSONServerClass : public TcpServerBase {
+    friend class Tagger::TaggerClass;
+  public:
+    explicit MbtJSONServerClass( const TiCC::Configuration * );
+    virtual ~MbtJSONServerClass();
+    static std::string VersionInfo( bool );
+  private:
+    void callback( childArgs* );
+    void createServers( const TiCC::Configuration * );
+    std::map<std::string, Tagger::TaggerClass *> experiments;
+  };
+
   void StartServer( TiCC::CL_Options& );
+  void StartJSONServer( TiCC::CL_Options& );
 }
 #endif
