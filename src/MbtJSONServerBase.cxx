@@ -148,8 +148,8 @@ namespace MbtServer {
     else {
       result += my_json["word"];
       result += " ";
-      if ( it.find("enriched") != it.end() ){
-	result += it["enriched"];
+      if ( my_json.find("enriched") != my_json.end() ){
+	result += my_json["enriched"];
 	result += " ";
       }
       result += my_json["tag"];
