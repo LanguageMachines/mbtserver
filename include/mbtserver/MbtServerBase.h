@@ -30,6 +30,7 @@
 
 #include "mbt/MbtAPI.h"
 #include "ticcutils/ServerBase.h"
+#include "json/json.hpp"
 
 namespace MbtServer {
   using namespace TimblServer;
@@ -52,6 +53,7 @@ namespace MbtServer {
     explicit MbtJSONServerClass( const TiCC::Configuration * );
     virtual ~MbtJSONServerClass();
     static std::string VersionInfo( bool );
+    nlohmann::json to_json( const std::string&, bool );
   private:
     void callback( childArgs* );
     void createServers( const TiCC::Configuration * );

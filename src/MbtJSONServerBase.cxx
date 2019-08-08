@@ -32,6 +32,7 @@
 #include <cstdio> // for remove()
 #include "config.h"
 #include "ticcutils/ServerBase.h"
+#include "ticcutils/PrettyPrint.h"
 #include "json/json.hpp"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
@@ -43,6 +44,7 @@ using namespace std;
 using namespace Timbl;
 using namespace Tagger;
 using namespace TiCC;
+using TiCC::operator<<;
 
 #define SLOG (*Log(theServer->myLog))
 #define SDBG (*Dbg(theServer->myLog))
@@ -140,8 +142,8 @@ namespace MbtServer {
 	if ( it.find("enriched") != it.end() ){
 	  result += it["enriched"];
 	  result += " ";
+	  result += it["tag"];
 	}
-	result += it["tag"];
 	result += "\n";
       }
     }
@@ -151,11 +153,87 @@ namespace MbtServer {
       if ( my_json.find("enriched") != my_json.end() ){
 	result += my_json["enriched"];
 	result += " ";
+	result += my_json["tag"];
       }
-      result += my_json["tag"];
       result += "\n";
     }
     return result;
+  }
+
+  nlohmann::json MbtJSONServerClass::to_json( const string& line,
+					      bool enriched ) {
+    if ( enriched ){
+      LOG << "handle ENRICHED: " << line << endl;
+      vector<string> lines = TiCC::split_at_first_of( line, "\n\r" );
+      LOG << "got " << lines.size() << " lines" << endl;
+      nlohmann::json result = nlohmann::json::array();
+      for ( const auto& l : lines ){
+	LOG << "handle line: " << l << endl;
+	vector<string> parts;
+	TiCC::split_at( l, parts, "/", true );
+	LOG << "split into " << parts.size() << " parts " << endl;
+	if ( parts.size() == 1 ){
+	  break;
+	}
+	nlohmann::json entry;
+	entry["word"] = parts[0];
+	vector<string> word_tags;
+	if ( parts.size() == 2 ){
+	  word_tags = TiCC::split_at( parts[1], "??" );
+	  entry["known"] = "yes";
+	}
+	else {
+	  word_tags = TiCC::split_at( parts[2], "??" );
+	}
+	LOG << "word-tags=" << word_tags << endl;
+	vector<string> res = TiCC::split( word_tags[1] );
+	entry["tag"] = res[0];
+	vector<string> conf = TiCC::split_at_first_of( res[1], "[]" );
+	entry["confidence"] = conf[0];
+	result.push_back( entry );
+      }
+      return result;
+    }
+    else {
+      LOG << "handle Normal: " << line << endl;
+      nlohmann::json result = nlohmann::json::array();
+      vector<string> parts = TiCC::split( line );
+      for ( const auto& p : parts ){
+	vector<string> word_tags;
+	TiCC::split_at( p, word_tags, "/", true );
+	LOG << "word-tags=" << word_tags << endl;
+	if ( word_tags.size() == 1 ){
+	  break;
+	}
+	if ( word_tags.size() == 2 ){
+	  nlohmann::json entry;
+	  entry["word"] = word_tags[0];
+	  entry["tag"] = word_tags[1];
+	  entry["known"] = "yes";
+	  result.push_back( entry );
+	  //	  LOG << "created: " << entry << endl;
+	}
+	else if ( word_tags.size() == 3 ){
+	  nlohmann::json entry;
+	  entry["word"] = word_tags[0];
+	  entry["tag"] = word_tags[2];
+	  entry["known"] = "no";
+	  //	  LOG << "created: " << entry << endl;
+	  result.push_back( entry );
+	}
+	else if ( word_tags.size() == 4 ){
+	  nlohmann::json entry;
+	  entry["word"] = word_tags[0];
+	  entry["tag"] = word_tags[2];
+	  entry["confidence"] = word_tags[3];
+	  //	  LOG << "created: " << entry << endl;
+	  result.push_back( entry );
+	}
+      }
+      LOG << "created: " << result << endl;
+      LOG << endl << endl << "returnning now" << endl;
+      return result;
+    }
   }
 
   // ***** This is the routine that is executed from a new thread **********
@@ -212,12 +290,16 @@ namespace MbtServer {
 	string result;
 	SDBG << "TagLine (" << text << ")" << endl;
 	int num = exp->TagLine( text, result );
+	SDBG << "tagged result = " << result << ")" << endl;
 	if ( num > 0 ){
 	  nw += num;
-	  args->os() << result << endl;
+	  nlohmann::json got_json = to_json( result , exp->enriched() );
+	  LOG << "voor WRiTE json!" << endl;
+	  args->os() << got_json << endl;
+	  LOG << "WROTE json!" << endl;
 	}
       }
-      while ( args->is() >> my_json ){
+      while ( args->is().good() && args->is() >> my_json ){
 	SDBG << "handle json request '" << my_json << "'" << endl;
 	string text = extract_text( my_json );
 	string result;
@@ -225,8 +307,12 @@ namespace MbtServer {
 	int num = exp->TagLine( text, result );
 	if ( num > 0 ){
 	  nw += num;
-	  args->os() << result << endl;
+	  nlohmann::json got_json = to_json( result, exp->enriched() );
+	  LOG << "voor WRiTE json!" << endl;
+	  args->os() << got_json << endl;
+	  LOG << "WROTE json!" << endl;
 	}
+	break;
       }
     }
     SLOG << "Total: " << nw << " words processed " << endl;
