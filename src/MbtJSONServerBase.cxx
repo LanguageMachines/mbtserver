@@ -262,7 +262,7 @@ namespace MbtServer {
     int nw = 0;
     string Line;
     TaggerClass *exp = 0;
-
+    SDBG << "Start READING json" << endl;
     nlohmann::json my_json;
     args->is() >> my_json;
     SDBG << "READ json='" << my_json << "'" << endl;
@@ -290,13 +290,13 @@ namespace MbtServer {
 	string result;
 	SDBG << "TagLine (" << text << ")" << endl;
 	int num = exp->TagLine( text, result );
-	SDBG << "tagged result = " << result << ")" << endl;
+	SDBG << "num=" << num << " tagged result = (" << result << ")" << endl;
 	if ( num > 0 ){
 	  nw += num;
 	  nlohmann::json got_json = to_json( result , exp->enriched() );
-	  LOG << "voor WRiTE json!" << endl;
+	  SDBG << "voor WRiTE json! " << got_json << endl;
 	  args->os() << got_json << endl;
-	  LOG << "WROTE json!" << endl;
+	  SDBG << "WROTE json!" << endl;
 	}
       }
       while ( args->is().good() && args->is() >> my_json ){
@@ -305,14 +305,14 @@ namespace MbtServer {
 	string result;
 	SDBG << "TagLine (" << text << ")" << endl;
 	int num = exp->TagLine( text, result );
+	SDBG << "NAM=" << num << " tagged result = (" << result << ")" << endl;
 	if ( num > 0 ){
 	  nw += num;
 	  nlohmann::json got_json = to_json( result, exp->enriched() );
-	  LOG << "voor WRiTE json!" << endl;
+	  SDBG << "voor WRiTE json!: " << got_json << endl;
 	  args->os() << got_json << endl;
-	  LOG << "WROTE json!" << endl;
+	  SDBG << "WROTE json!" << endl;
 	}
-	break;
       }
     }
     SLOG << "Total: " << nw << " words processed " << endl;
@@ -330,6 +330,7 @@ namespace MbtServer {
       exit( EXIT_SUCCESS );
     }
     Configuration *config = initServerConfig( opts );
+    LOG << "STARTING A JSON SERVER!" << endl;
     MbtJSONServerClass server( config );
     server.Run();
   }
