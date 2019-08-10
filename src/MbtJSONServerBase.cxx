@@ -208,25 +208,29 @@ namespace MbtServer {
       SLOG << "Invalid basename " << baseName << " rejected" << endl;
     }
     if ( exp ){
-      if ( !skip ){
-	SDBG << "handle json request '" << my_json << "'" << endl;
-	string text = extract_text( my_json );
-	string result;
-	SDBG << "TagLine (" << text << ")" << endl;
-	vector<TagResult> v = exp->tagLine( text );
-	int num = v.size();
-	if ( num > 0 ){
-	  nw += num;
-	  nlohmann::json got_json = exp->TR_to_json( v );
-	  SDBG << "voor WRiTE json! " << got_json << endl;
-	  args->os() << got_json << endl;
-	  SDBG << "WROTE json!" << endl;
-	}
-	else {
-	  SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
-	}
+      if ( skip ){
+	args->is() >> my_json;
       }
-      while ( args->is().good() && args->is() >> my_json ){
+      SDBG << "handle json request '" << my_json << "'" << endl;
+      string text = extract_text( my_json );
+      string result;
+      SDBG << "TagLine (" << text << ")" << endl;
+      vector<TagResult> v = exp->tagLine( text );
+      int num = v.size();
+      SDBG << "ALIVE, got " << num << " tags" << endl;
+      cerr << "ALIVE, got " << num << " tags" << endl;
+      if ( num > 0 ){
+	nw += num;
+	nlohmann::json got_json = exp->TR_to_json( v );
+	SDBG << "voor WRiTE json! " << got_json << endl;
+	args->os() << got_json << endl;
+	SDBG << "WROTE json!" << endl;
+	}
+      else {
+	SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
+      }
+#ifdef NO
+      while ( args->is() >> my_json ){
 	SDBG << "handle json request '" << my_json << "'" << endl;
 	string text = extract_text( my_json );
 	string result;
@@ -241,6 +245,7 @@ namespace MbtServer {
 	  SDBG << "WROTE json!" << endl;
 	}
       }
+#endif
     }
     SLOG << "Total: " << nw << " words processed " << endl;
     delete exp;
