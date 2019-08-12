@@ -170,6 +170,26 @@ namespace MbtServer {
     return result;
   }
 
+  bool MbtJSONServerClass::read_json( ServerBase* theServer,
+				      istream& is,
+				      nlohmann::json& the_json ){
+    the_json.clear();
+    string json_line;
+    if ( getline( is, json_line ) ){
+      SDBG << "READ json_line='" << json_line << "'" << endl;
+      try {
+	the_json = nlohmann::json::parse( json_line );
+      }
+      catch ( const exception& e ){
+	SLOG << "json parsing failed on '" << json_line + "':"
+	     << e.what() << endl;
+	return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   // ***** This is the routine that is executed from a new thread **********
   void MbtJSONServerClass::callback( childArgs *args ){
     ServerBase *theServer = args->mother();
@@ -197,19 +217,9 @@ namespace MbtServer {
     string Line;
     TaggerClass *exp = 0;
     SDBG << "Start READING json" << endl;
-    string json_line;
-    if ( getline( args->is(), json_line ) ){
-      SDBG << "READ json_line='" << json_line << "'" << endl;
-      nlohmann::json my_json;
-      try {
-	my_json = nlohmann::json::parse( json_line );
-      }
-      catch ( const exception& e ){
-	SLOG << "json parsing failed on '" << json_line + "':"
-	     << e.what() << endl;
-	abort();
-      }
-      bool skip=false;
+    nlohmann::json my_json;
+    bool skip=false;
+    if ( read_json( theServer, args->is(), my_json ) ){
       if ( my_json.find( "base" ) != my_json.end() ){
 	baseName = my_json["base"];
 	SDBG << "Command is: base='" << baseName << "'" << endl;
@@ -228,18 +238,8 @@ namespace MbtServer {
       }
       if ( exp ){
 	if ( skip ){
-	  if ( getline( args->is(), json_line ) ){
-	    try {
-	      my_json = nlohmann::json::parse( json_line );
-	    }
-	    catch ( const exception& e ){
-	      SLOG << "json parsing failed on '" << json_line + "':"
-		   << e.what() << endl;
-	      abort();
-	    }
-	  }
-	  else {
-	    SLOG << "reading failed" << endl;
+	  if ( !read_json( theServer, args->is(), my_json ) ){
+	    SLOG << "reading json failed" << endl;
 	    abort();
 	  }
 	}
@@ -260,15 +260,7 @@ namespace MbtServer {
 	else {
 	  SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
 	}
-	while ( getline( args->is(), json_line ) ){
-	  try {
-	    my_json = nlohmann::json::parse( json_line );
-	  }
-	  catch ( const exception& e ){
-	    SLOG << "json parsing failed on '" << json_line << "':"
-		 << e.what() << endl;
-	    abort();
-	  }
+	while ( read_json( theServer, args->is(), my_json ) ){
 	  SDBG << "handle next json request '" << my_json << "'" << endl;
 	  string text = extract_text( my_json );
 	  string result;
@@ -286,7 +278,7 @@ namespace MbtServer {
       }
     }
     else {
-      SLOG << "reading failed!" << endl;
+      SLOG << "reading json failed!" << endl;
     }
     SLOG << "Total: " << nw << " words processed " << endl;
     delete exp;
