@@ -139,10 +139,15 @@ namespace MbtServer {
       for ( const auto& it : my_json ){
 	result += it["word"];
 	result += " ";
-	if ( it.find("enriched") != it.end() ){
-	  result += it["enriched"];
+	if ( it.find("enrichment") != it.end() ){
+	  result += it["enrichment"];
 	  result += " ";
-	  result += it["tag"];
+	  if ( it.find("tag") != it.end() ){
+	    result += it["tag"];
+	  }
+	  else {
+	    result += "??";
+	  }
 	  result += "\n";
 	}
       }
@@ -150,10 +155,15 @@ namespace MbtServer {
     else {
       result += my_json["word"];
       result += " ";
-      if ( my_json.find("enriched") != my_json.end() ){
-	result += my_json["enriched"];
+      if ( my_json.find("enrichment") != my_json.end() ){
+	result += my_json["enrichment"];
 	result += " ";
-	result += my_json["tag"];
+	if ( my_json.find("tag") != my_json.end() ){
+	  result += my_json["tag"];
+	}
+	else {
+	  result += "??";
+	}
 	result += "\n";
       }
     }
@@ -255,7 +265,7 @@ namespace MbtServer {
 	    my_json = nlohmann::json::parse( json_line );
 	  }
 	  catch ( const exception& e ){
-	    SLOG << "json parsing failed on '" << json_line + "':"
+	    SLOG << "json parsing failed on '" << json_line << "':"
 		 << e.what() << endl;
 	    abort();
 	  }
