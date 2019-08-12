@@ -187,65 +187,96 @@ namespace MbtServer {
     string Line;
     TaggerClass *exp = 0;
     SDBG << "Start READING json" << endl;
-    nlohmann::json my_json;
-    args->is() >> my_json;
-    SDBG << "READ json='" << my_json << "'" << endl;
-    bool skip=false;
-    if ( my_json.find( "base" ) != my_json.end() ){
-      baseName = my_json["base"];
-      SDBG << "Command is: base='" << baseName << "'" << endl;
-      skip = true;
-    }
-    if ( experiments->find( baseName ) != experiments->end() ){
-      exp = (*experiments)[baseName]->clone( );
-      if ( baseName != "default" ){
-	args->os() << "base set to '" << baseName << "'" << endl;
-	SLOG << "Set basename " << baseName << endl;
+    string json_line;
+    if ( getline( args->is(), json_line ) ){
+      SDBG << "READ json_line='" << json_line << "'" << endl;
+      nlohmann::json my_json;
+      try {
+	my_json = nlohmann::json::parse( json_line );
       }
-    }
-    else {
-      args->os() << "invalid basename '" << baseName << "'" << endl;
-      SLOG << "Invalid basename " << baseName << " rejected" << endl;
-    }
-    if ( exp ){
-      if ( skip ){
-	args->is() >> my_json;
+      catch ( const exception& e ){
+	SLOG << "json parsing failed on '" << json_line + "':"
+	     << e.what() << endl;
+	abort();
       }
-      SDBG << "handle json request '" << my_json << "'" << endl;
-      string text = extract_text( my_json );
-      string result;
-      SDBG << "TagLine (" << text << ")" << endl;
-      vector<TagResult> v = exp->tagLine( text );
-      int num = v.size();
-      SDBG << "ALIVE, got " << num << " tags" << endl;
-      cerr << "ALIVE, got " << num << " tags" << endl;
-      if ( num > 0 ){
-	nw += num;
-	nlohmann::json got_json = exp->TR_to_json( v );
-	SDBG << "voor WRiTE json! " << got_json << endl;
-	args->os() << got_json << endl;
-	SDBG << "WROTE json!" << endl;
+      bool skip=false;
+      if ( my_json.find( "base" ) != my_json.end() ){
+	baseName = my_json["base"];
+	SDBG << "Command is: base='" << baseName << "'" << endl;
+	skip = true;
+      }
+      if ( experiments->find( baseName ) != experiments->end() ){
+	exp = (*experiments)[baseName]->clone( );
+	if ( baseName != "default" ){
+	  args->os() << "base set to '" << baseName << "'" << endl;
+	  SLOG << "Set basename " << baseName << endl;
 	}
-      else {
-	SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
       }
-#ifdef NO
-      while ( args->is() >> my_json ){
+      else {
+	args->os() << "invalid basename '" << baseName << "'" << endl;
+	SLOG << "Invalid basename " << baseName << " rejected" << endl;
+      }
+      if ( exp ){
+	if ( skip ){
+	  if ( getline( args->is(), json_line ) ){
+	    try {
+	      my_json = nlohmann::json::parse( json_line );
+	    }
+	    catch ( const exception& e ){
+	      SLOG << "json parsing failed on '" << json_line + "':"
+		   << e.what() << endl;
+	      abort();
+	    }
+	  }
+	  else {
+	    SLOG << "reading failed" << endl;
+	    abort();
+	  }
+	}
 	SDBG << "handle json request '" << my_json << "'" << endl;
 	string text = extract_text( my_json );
 	string result;
 	SDBG << "TagLine (" << text << ")" << endl;
 	vector<TagResult> v = exp->tagLine( text );
 	int num = v.size();
+	SDBG << "ALIVE, got " << num << " tags" << endl;
 	if ( num > 0 ){
 	  nw += num;
 	  nlohmann::json got_json = exp->TR_to_json( v );
-	  SDBG << "voor WRiTE json!: " << got_json << endl;
+	  SDBG << "voor WRiTE json! " << got_json << endl;
 	  args->os() << got_json << endl;
 	  SDBG << "WROTE json!" << endl;
 	}
+	else {
+	  SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
+	}
+	while ( getline( args->is(), json_line ) ){
+	  try {
+	    my_json = nlohmann::json::parse( json_line );
+	  }
+	  catch ( const exception& e ){
+	    SLOG << "json parsing failed on '" << json_line + "':"
+		 << e.what() << endl;
+	    abort();
+	  }
+	  SDBG << "handle next json request '" << my_json << "'" << endl;
+	  string text = extract_text( my_json );
+	  string result;
+	  SDBG << "TagLine (" << text << ")" << endl;
+	  vector<TagResult> v = exp->tagLine( text );
+	  int num = v.size();
+	  if ( num > 0 ){
+	    nw += num;
+	    nlohmann::json got_json = exp->TR_to_json( v );
+	    SDBG << "voor WRiTE json!: " << got_json << endl;
+	    args->os() << got_json << endl;
+	    SDBG << "WROTE json!" << endl;
+	  }
+	}
       }
-#endif
+    }
+    else {
+      SLOG << "reading failed!" << endl;
     }
     SLOG << "Total: " << nw << " words processed " << endl;
     delete exp;
