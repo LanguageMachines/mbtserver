@@ -37,7 +37,6 @@
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
 #include "mbtserver/MbtServerBase.h"
-#include "json/json.hpp"
 #include <pthread.h>
 
 using namespace std;
@@ -50,88 +49,6 @@ using TiCC::operator<<;
 #define SDBG (*Dbg(theServer->myLog))
 
 namespace MbtServer {
-
-  inline void usage(){
-    cerr << "usage:  mbtserver --config=config-file"
-	 << endl;
-    cerr << "or      mbtserver -s settings-file -S port"
-	 << endl;
-    cerr << "or      mbtserver {MbtOptions} -S port"
-	 << endl;
-    cerr << "see 'mbt -h' for all MbtOptions"
-	 << endl;
-    cerr << endl;
-  }
-
-  MbtJSONServerClass::MbtJSONServerClass( const TiCC::Configuration *c ):
-    TcpServerBase( c ) {
-    myLog.message("MbtServer:");
-    myLog.setstamp(StampMessage);
-    if ( doDebug() )
-      myLog.setlevel( LogHeavy );
-    cerr << "mbtserver " << VERSION << endl;
-    cerr << "based on " << Timbl::VersionName() << " and "
-	 << TimblServer::VersionName() << endl;
-    createServers( c );
-    if ( experiments.empty() ){
-      cerr << "starting the server failed." << endl;
-      usage();
-      exit( EXIT_FAILURE );
-    }
-    callback_data = &experiments;
-  }
-
-  MbtJSONServerClass::~MbtJSONServerClass(){
-    for ( const auto& it : experiments ){
-      delete it.second;
-    }
-    delete config;
-  }
-
-  void MbtJSONServerClass::createServers( const TiCC::Configuration *c ){
-    map<string,string> allvals;
-    if ( c->hasSection("experiments") )
-      allvals = c->lookUpAll("experiments");
-    else {
-      allvals = c->lookUpAll("global");
-      // old style, everything is global
-      // remove all already processed stuff
-      auto it = allvals.begin();
-      while ( it != allvals.end() ){
-	if ( it->first == "port" ||
-	     it->first == "protocol" ||
-	     it->first == "configDir" ||
-	     it->first == "logfile" ||
-	     it->first == "debug" ||
-	     it->first == "pidfile" ||
-	     it->first == "daemonize" ||
-	     it->first == "maxconn" ){
-	  it = allvals.erase(it);
-	}
-	else {
-	  ++it;
-	}
-      }
-    }
-    for( const auto& it : allvals ){
-      string key = trim(it.first);
-      TaggerClass *exp = new TaggerClass();
-      TiCC::CL_Options opts( mbt_short_opts, mbt_long_opts );
-      opts.init( it.second );
-      exp->parse_run_args( opts, true );
-      exp->set_default_filenames();
-      exp->setLog( myLog );
-      if ( exp->InitTagging() ){
-	cerr << "Created server " << key << endl;
-	experiments[key] = exp;
-      }
-      else {
-	cerr << "failed to created a server with name=" << key << endl;
-	cerr << "and options = " << it.second << endl;
-	delete exp;
-      }
-    }
-  }
 
   string extract_text( nlohmann::json& my_json ){
     string result;
@@ -282,6 +199,18 @@ namespace MbtServer {
     }
     SLOG << "Total: " << nw << " words processed " << endl;
     delete exp;
+  }
+
+  inline void usage(){
+    cerr << "usage:  mbtserver --config=config-file"
+	 << endl;
+    cerr << "or      mbtserver -s settings-file -S port"
+	 << endl;
+    cerr << "or      mbtserver {MbtOptions} -S port"
+	 << endl;
+    cerr << "see 'mbt -h' for all MbtOptions"
+	 << endl;
+    cerr << endl;
   }
 
   void StartJSONServer( TiCC::CL_Options& opts ){
