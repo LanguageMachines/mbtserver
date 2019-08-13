@@ -50,6 +50,61 @@ using TiCC::operator<<;
 
 namespace MbtServer {
 
+  nlohmann::json TR_to_json( const TaggerClass *context,
+			     const vector<TagResult>& trs ){
+    nlohmann::json result = nlohmann::json::array();
+    for ( const auto& tr : trs ){
+      // lookup the assigned category
+      nlohmann::json one_entry;
+      one_entry["word"] = tr.word();
+      one_entry["known"] = tr.is_known();
+      if ( context->enriched() ){
+	one_entry["enrichment"] = tr.enrichment();
+      }
+      one_entry["tag"] = tr.assigned_tag();
+      if ( context->confidence_is_set() ){
+	one_entry["confidence"] = tr.confidence();
+      }
+      if ( context->distrib_is_set() ){
+	one_entry["distribution"] = tr.distribution();
+      }
+      if ( context->distance_is_set() ){
+	one_entry["distance"] = tr.distance();
+      }
+      result.push_back( one_entry );
+    } // end of output loop through one sentence
+    return result;
+  }
+
+  vector<TagResult> json_to_TR( const nlohmann::json& in ){
+    //    cerr << "json_to_TR( " << in  << ")" << endl;
+    vector<TagResult> result;
+    for ( auto& i : in ){
+      //      cerr << "looping json_to_TR( " << i << ")" << endl;
+      TagResult tr;
+      tr.set_word( i["word"] );
+      if ( i.find("known") != i.end() ){
+	tr.set_known( i["known"] == "true" );
+      }
+      tr.set_tag( i["tag"] );
+      if ( i.find("confidence") != i.end() ){
+	tr.set_confidence( i["confidence"] );;
+      }
+      if ( i.find("distance") != i.end() ){
+	tr.set_distance( i["distance"] );
+      }
+      if ( i.find("distribution") != i.end() ){
+	tr.set_distribution( i["distribution"] );
+      }
+      if ( i.find("enrichment") != i.end() ){
+	tr.set_enrichment( i["enrichment"] );
+      }
+      result.push_back( tr );
+    }
+    return result;
+  }
+
+
   string extract_text( nlohmann::json& my_json ){
     string result;
     if ( my_json.is_array() ){
@@ -169,7 +224,7 @@ namespace MbtServer {
 	SDBG << "ALIVE, got " << num << " tags" << endl;
 	if ( num > 0 ){
 	  nw += num;
-	  nlohmann::json got_json = exp->TR_to_json( v );
+	  nlohmann::json got_json = TR_to_json( exp, v );
 	  SDBG << "voor WRiTE json! " << got_json << endl;
 	  args->os() << got_json << endl;
 	  SDBG << "WROTE json!" << endl;
@@ -186,7 +241,7 @@ namespace MbtServer {
 	  int num = v.size();
 	  if ( num > 0 ){
 	    nw += num;
-	    nlohmann::json got_json = exp->TR_to_json( v );
+	    nlohmann::json got_json = TR_to_json( exp, v );
 	    SDBG << "voor WRiTE json!: " << got_json << endl;
 	    args->os() << got_json << endl;
 	    SDBG << "WROTE json!" << endl;

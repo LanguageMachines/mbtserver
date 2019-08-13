@@ -75,6 +75,7 @@ LIBS="$LIBS $mbt_LIBS"
 
 AC_CONFIG_FILES([
   Makefile
+  mbtserver.pc
   src/Makefile
   include/Makefile
   include/mbtserver/Makefile
