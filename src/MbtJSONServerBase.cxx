@@ -33,7 +33,7 @@
 #include "config.h"
 #include "ticcutils/ServerBase.h"
 #include "ticcutils/PrettyPrint.h"
-#include "json/json.hpp"
+#include "ticcutils/json.hpp"
 #include "mbt/Logging.h"
 #include "mbt/Tagger.h"
 #include "mbtserver/MbtServerBase.h"
