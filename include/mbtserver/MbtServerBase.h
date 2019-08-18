@@ -30,7 +30,7 @@
 
 #include "mbt/MbtAPI.h"
 #include "ticcutils/ServerBase.h"
-#include "json/json.hpp"
+#include "ticcutils/json.hpp"
 
 namespace MbtServer {
   using namespace TimblServer;
