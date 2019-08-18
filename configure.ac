@@ -27,6 +27,7 @@ LT_INIT
 # when running tests, use CXX
 AC_LANG([C++])
 
+AC_OPENMP
 # Checks for libraries.
 
 # Checks for header files.
@@ -69,7 +70,7 @@ LIBS="$LIBS $timbl_LIBS"
 PKG_CHECK_MODULES([json], [json >= 0.1] )
 CXXFLAGS="$CXXFLAGS $json_CFLAGS"
 
-PKG_CHECK_MODULES([mbt], [mbt >= 3.2.13] )
+PKG_CHECK_MODULES([mbt], [mbt >= 3.5] )
 CXXFLAGS="$CXXFLAGS $mbt_CFLAGS"
 LIBS="$LIBS $mbt_LIBS"
 
