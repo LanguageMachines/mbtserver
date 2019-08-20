@@ -37,6 +37,13 @@ matrix:
       env:
         - SCAN=echo
 
+    - os: osx
+      compiler: clang
+      cache: ccache
+      env:
+        - SCAN=echo
+        - LLVM_CLANG=yes
+
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       sudo apt-get update;
@@ -55,10 +62,12 @@ before_install:
       brew install libtar;
       brew install cppcheck;
       brew install ccache;
-      brew install llvm;
-      export PATH="/usr/local/opt/llvm/bin:$PATH";
-      export LDFLAGS="-L/usr/local/opt/llvm/lib";
-      export CXXFLAGS="-I/usr/local/opt/llvm/include";
+      if [[ "$LLVM_CLANG" == "yes" ]]; then
+        brew install llvm;
+        export PATH="/usr/local/opt/llvm/bin:$PATH";
+        export LDFLAGS="-L/usr/local/opt/llvm/lib";
+        export CXXFLAGS="-I/usr/local/opt/llvm/include";
+      fi
     fi
   - export PATH="/usr/lib/ccache/bin/:$PATH"
 
