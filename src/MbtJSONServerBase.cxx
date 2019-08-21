@@ -43,6 +43,8 @@ using namespace std;
 using namespace Timbl;
 using namespace Tagger;
 using namespace TiCC;
+using namespace nlohmann;
+
 using TiCC::operator<<;
 
 #define SLOG (*Log(theServer->myLog))
@@ -50,12 +52,12 @@ using TiCC::operator<<;
 
 namespace MbtServer {
 
-  nlohmann::json TR_to_json( const TaggerClass *context,
+  json TR_to_json( const TaggerClass *context,
 			     const vector<TagResult>& trs ){
-    nlohmann::json result = nlohmann::json::array();
+    json result = json::array();
     for ( const auto& tr : trs ){
       // lookup the assigned category
-      nlohmann::json one_entry;
+      json one_entry;
       one_entry["word"] = tr.word();
       one_entry["known"] = tr.is_known();
       if ( context->enriched() ){
@@ -76,7 +78,7 @@ namespace MbtServer {
     return result;
   }
 
-  vector<TagResult> json_to_TR( const nlohmann::json& in ){
+  vector<TagResult> json_to_TR( const json& in ){
     //    cerr << "json_to_TR( " << in  << ")" << endl;
     vector<TagResult> result;
     for ( auto& i : in ){
@@ -105,7 +107,7 @@ namespace MbtServer {
   }
 
 
-  string extract_text( nlohmann::json& my_json ){
+  string extract_text( json& my_json ){
     string result;
     if ( my_json.is_array() ){
       for ( const auto& it : my_json ){
@@ -146,13 +148,13 @@ namespace MbtServer {
 
   bool MbtJSONServerClass::read_json( ServerBase* theServer,
 				      istream& is,
-				      nlohmann::json& the_json ){
+				      json& the_json ){
     the_json.clear();
     string json_line;
     if ( getline( is, json_line ) ){
       SDBG << "READ json_line='" << json_line << "'" << endl;
       try {
-	the_json = nlohmann::json::parse( json_line );
+	the_json = json::parse( json_line );
       }
       catch ( const exception& e ){
 	SLOG << "json parsing failed on '" << json_line + "':"
@@ -190,7 +192,7 @@ namespace MbtServer {
     int nw = 0;
     TaggerClass *exp = 0;
     SDBG << "Start READING json" << endl;
-    nlohmann::json my_json;
+    json my_json;
     if ( read_json( theServer, args->is(), my_json ) ){
       bool skip=false;
       if ( my_json.find( "base" ) != my_json.end() ){
@@ -225,7 +227,7 @@ namespace MbtServer {
 	  SDBG << "ALIVE, got " << num << " tags" << endl;
 	  if ( num > 0 ){
 	    nw += num;
-	    nlohmann::json got_json = TR_to_json( exp, v );
+	    json got_json = TR_to_json( exp, v );
 	    SDBG << "voor WRiTE json! " << got_json << endl;
 	    args->os() << got_json << endl;
 	    SDBG << "WROTE json!" << endl;
