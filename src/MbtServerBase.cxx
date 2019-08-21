@@ -82,11 +82,11 @@ namespace MbtServer {
       exp->set_default_filenames();
       exp->setLog( myLog );
       if ( exp->InitTagging() ){
-	cerr << "Created server " << key << endl;
+	cerr << "Created a tagger " << key << endl;
 	experiments[key] = exp;
       }
       else {
-	cerr << "failed to created a server with name=" << key << endl;
+	cerr << "failed to created a tagger with name=" << key << endl;
 	cerr << "and options = " << it.second << endl;
 	delete exp;
       }

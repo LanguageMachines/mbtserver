@@ -188,12 +188,11 @@ namespace MbtServer {
       args->os() << endl;
     }
     int nw = 0;
-    string Line;
     TaggerClass *exp = 0;
     SDBG << "Start READING json" << endl;
     nlohmann::json my_json;
-    bool skip=false;
     if ( read_json( theServer, args->is(), my_json ) ){
+      bool skip=false;
       if ( my_json.find( "base" ) != my_json.end() ){
 	baseName = my_json["base"];
 	SDBG << "Command is: base='" << baseName << "'" << endl;
@@ -217,38 +216,25 @@ namespace MbtServer {
 	    abort();
 	  }
 	}
-	SDBG << "handle json request '" << my_json << "'" << endl;
-	string text = extract_text( my_json );
-	string result;
-	SDBG << "TagLine (" << text << ")" << endl;
-	vector<TagResult> v = exp->tagLine( text );
-	int num = v.size();
-	SDBG << "ALIVE, got " << num << " tags" << endl;
-	if ( num > 0 ){
-	  nw += num;
-	  nlohmann::json got_json = TR_to_json( exp, v );
-	  SDBG << "voor WRiTE json! " << got_json << endl;
-	  args->os() << got_json << endl;
-	  SDBG << "WROTE json!" << endl;
-	}
-	else {
-	  SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
-	}
-	while ( read_json( theServer, args->is(), my_json ) ){
-	  SDBG << "handle next json request '" << my_json << "'" << endl;
+	do {
+	  SDBG << "handle json request '" << my_json << "'" << endl;
 	  string text = extract_text( my_json );
-	  string result;
 	  SDBG << "TagLine (" << text << ")" << endl;
 	  vector<TagResult> v = exp->tagLine( text );
 	  int num = v.size();
+	  SDBG << "ALIVE, got " << num << " tags" << endl;
 	  if ( num > 0 ){
 	    nw += num;
 	    nlohmann::json got_json = TR_to_json( exp, v );
-	    SDBG << "voor WRiTE json!: " << got_json << endl;
+	    SDBG << "voor WRiTE json! " << got_json << endl;
 	    args->os() << got_json << endl;
 	    SDBG << "WROTE json!" << endl;
 	  }
+	  else {
+	    SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
+	  }
 	}
+	while ( read_json( theServer, args->is(), my_json ) );
       }
     }
     else {

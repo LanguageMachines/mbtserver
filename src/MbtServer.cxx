@@ -34,10 +34,11 @@ using namespace std;
 
 int main( int argc, const char *argv[]) {
   TiCC::CL_Options opts( Tagger::mbt_short_opts + TimblServer::serv_short_opts,
-			 Tagger::mbt_long_opts + TimblServer::serv_long_opts
-			 + ",json");
+			 Tagger::mbt_long_opts + TimblServer::serv_long_opts );
   opts.init( argc, argv );
-  if ( opts.extract( "json" ) ){
+  string protocol;
+  opts.find( "protocol", protocol );
+  if ( protocol == "json" ){
     MbtServer::StartJSONServer( opts );
   }
   else {
