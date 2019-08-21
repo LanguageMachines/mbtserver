@@ -109,13 +109,14 @@ namespace MbtServer {
     string result;
     if ( my_json.is_array() ){
       for ( const auto& it : my_json ){
-	result += it["word"];
-	result += " ";
+	string tmp = it["word"];
+	result += tmp + " ";
 	if ( it.find("enrichment") != it.end() ){
-	  result += it["enrichment"];
-	  result += " ";
+	  tmp = it["enrichment"];
+	  result += tmp + " ";
 	  if ( it.find("tag") != it.end() ){
-	    result += it["tag"];
+	    tmp = it["tag"];
+	    result += tmp;
 	  }
 	  else {
 	    result += "??";
@@ -125,13 +126,14 @@ namespace MbtServer {
       }
     }
     else {
-      result += my_json["word"];
-      result += " ";
+      string tmp = my_json["word"];
+      result += tmp +  " ";
       if ( my_json.find("enrichment") != my_json.end() ){
-	result += my_json["enrichment"];
-	result += " ";
+	tmp = my_json["enrichment"];
+	result += tmp + " ";
 	if ( my_json.find("tag") != my_json.end() ){
-	  result += my_json["tag"];
+	  tmp = my_json["tag"];
+	  result += tmp;
 	}
 	else {
 	  result += "??";
