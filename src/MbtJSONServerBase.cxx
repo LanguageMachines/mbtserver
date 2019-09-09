@@ -146,19 +146,15 @@ namespace MbtServer {
     return result;
   }
 
-  bool MbtJSONServerClass::read_json( ServerBase* theServer,
-				      istream& is,
+  bool MbtJSONServerClass::read_json( istream& is,
 				      json& the_json ){
     the_json.clear();
     string json_line;
     if ( getline( is, json_line ) ){
-      SDBG << "READ json_line='" << json_line << "'" << endl;
       try {
 	the_json = json::parse( json_line );
       }
       catch ( const exception& e ){
-	SLOG << "json parsing failed on '" << json_line + "':"
-	     << e.what() << endl;
 	return false;
       }
       return true;
@@ -168,63 +164,87 @@ namespace MbtServer {
 
   // ***** This is the routine that is executed from a new thread **********
   void MbtJSONServerClass::callback( childArgs *args ){
-    ServerBase *theServer = args->mother();
+    MbtJSONServerClass *theServer = dynamic_cast<MbtJSONServerClass*>( args->mother() );
+    int sockId = args->id();
+    TaggerClass *exp = 0;
     map<string, TaggerClass*> *experiments =
       static_cast<map<string, TaggerClass*> *>(callback_data);
-
-    args->os() << "Welcome to the Mbt server." << endl;
+    json out_json;
+    out_json["status"] = "ok";
     string baseName = "default";
-    if ( experiments->size() > 1 ){
-      map<string,TaggerClass*>::const_iterator it = experiments->begin();
-      bool first = true;
-      while ( it != experiments->end() ){
-	if ( it->first != "default" ){
-	  if ( first ){
-	    args->os() << "available bases: ";
-	    first = false;
-	  }
-	  args->os() << it->first << " ";
-	}
-	++it;
-      }
-      args->os() << endl;
-    }
     int nw = 0;
-    TaggerClass *exp = 0;
-    SDBG << "Start READING json" << endl;
-    json my_json;
-    if ( read_json( theServer, args->is(), my_json ) ){
-      bool skip=false;
-      if ( my_json.find( "base" ) != my_json.end() ){
-	baseName = my_json["base"];
-	SDBG << "Command is: base='" << baseName << "'" << endl;
-	skip = true;
+    if ( experiments->size() == 1 ){
+      exp = (*experiments)[baseName]->clone();
+    }
+    else {
+      json arr = json::array();
+      for ( const auto& it : *experiments ){
+	arr.push_back( it.first );
       }
-      if ( experiments->find( baseName ) != experiments->end() ){
-	exp = (*experiments)[baseName]->clone( );
-	if ( baseName != "default" ){
-	  args->os() << "base set to '" << baseName << "'" << endl;
-	  SLOG << "Set basename " << baseName << endl;
+      out_json["available_bases"] = arr;
+    }
+    cerr << "send JSON: " << out_json.dump(2) << endl;
+    args->os() << out_json << endl;
+
+    json in_json;
+    bool go_on = true;
+    while ( go_on && theServer->read_json( args->is(), in_json ) ){
+      if ( in_json.empty() ){
+	continue;
+      }
+      cerr<< "handling JSON" << in_json.dump(2) << endl;
+      string command;
+      string param;
+      vector<string> params;
+      if ( in_json.find( "command" ) != in_json.end() ){
+	command = in_json["command"];
+      }
+      if ( command.empty() ){
+	DBG << sockId << " Don't understand '" << in_json << "'" << endl;
+	json out_json;
+	out_json["error"] = "Illegal instruction:'" + in_json.dump() + "'";
+	cerr << "send JSON: " << out_json.dump(2) << endl;
+	args->os() << out_json << endl;
+      }
+      if ( command == "base" ){
+	if ( in_json.find("param") != in_json.end() ){
+	  param = in_json["param"];
 	}
-      }
-      else {
-	args->os() << "invalid basename '" << baseName << "'" << endl;
-	SLOG << "Invalid basename " << baseName << " rejected" << endl;
-      }
-      if ( exp ){
-	if ( skip ){
-	  if ( !read_json( theServer, args->is(), my_json ) ){
-	    SLOG << "reading json failed" << endl;
-	    abort();
+	if ( param.empty() ){
+	  json out_json;
+	  out_json["error"] = "missing param for 'base' instruction:'";
+	  cerr << "send JSON: " << out_json.dump(2) << endl;
+	  args->os() << out_json << endl;
+	}
+	else {
+	  baseName = in_json["base"];
+	  if ( experiments->find( baseName ) != experiments->end() ){
+	    exp = (*experiments)[baseName]->clone( );
+	    args->os() << "base set to '" << baseName << "'" << endl;
+	    cerr << "Set basename " << baseName << endl;
+	  }
+	  else {
+	    json out_json;
+	    out_json["error"] = "unknown base '" + baseName + "'";
+	    cerr << "send JSON: " << out_json.dump(2) << endl;
+	    args->os() << out_json << endl;
 	  }
 	}
-	do {
-	  SDBG << "handle json request '" << my_json << "'" << endl;
-	  string text = extract_text( my_json );
-	  SDBG << "TagLine (" << text << ")" << endl;
+      }
+      else if ( command == "tag" ){
+	if ( !exp ){
+	  json out_json;
+	  out_json["error"] = "no base selected yet";
+	  cerr << "send JSON: " << out_json.dump(2) << endl;
+	  args->os() << out_json << endl;
+	}
+	else {
+	  cerr << "handle json request '" << in_json << "'" << endl;
+	  string text = extract_text( in_json["sentence"] );
+	  cerr << "TagLine (" << text << ")" << endl;
 	  vector<TagResult> v = exp->tagLine( text );
 	  int num = v.size();
-	  SDBG << "ALIVE, got " << num << " tags" << endl;
+	  cerr << "ALIVE, got " << num << " tags" << endl;
 	  if ( num > 0 ){
 	    nw += num;
 	    json got_json = TR_to_json( exp, v );
@@ -234,13 +254,12 @@ namespace MbtServer {
 	  }
 	  else {
 	    SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
+	    json out_json;
+	    out_json["error"] = "tagger failed";
+	    args->os() << out_json << endl;
 	  }
 	}
-	while ( read_json( theServer, args->is(), my_json ) );
       }
-    }
-    else {
-      SLOG << "reading json failed!" << endl;
     }
     SLOG << "Total: " << nw << " words processed " << endl;
     delete exp;

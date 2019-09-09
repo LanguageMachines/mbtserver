@@ -55,7 +55,7 @@ namespace MbtServer {
     {};
   private:
     void callback( childArgs* );
-    bool read_json( ServerBase *, std::istream&, nlohmann::json& );
+    bool read_json( std::istream&, nlohmann::json& );
   };
 
   void StartServer( TiCC::CL_Options& );
