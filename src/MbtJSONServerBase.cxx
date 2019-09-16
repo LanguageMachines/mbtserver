@@ -217,10 +217,12 @@ namespace MbtServer {
 	  args->os() << out_json << endl;
 	}
 	else {
-	  baseName = in_json["base"];
+	  baseName = in_json["param"];
 	  if ( experiments->find( baseName ) != experiments->end() ){
 	    exp = (*experiments)[baseName]->clone( );
-	    args->os() << "base set to '" << baseName << "'" << endl;
+	    json out_json;
+	    out_json["base"] = baseName;
+	    args->os() << out_json << endl;
 	    cerr << "Set basename " << baseName << endl;
 	  }
 	  else {
