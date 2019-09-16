@@ -267,32 +267,4 @@ namespace MbtServer {
     delete exp;
   }
 
-  inline void usage(){
-    cerr << "usage:  mbtserver --config=config-file"
-	 << endl;
-    cerr << "or      mbtserver -s settings-file -S port"
-	 << endl;
-    cerr << "or      mbtserver {MbtOptions} -S port"
-	 << endl;
-    cerr << "see 'mbt -h' for all MbtOptions"
-	 << endl;
-    cerr << endl;
-  }
-
-  void StartJSONServer( TiCC::CL_Options& opts ){
-    if ( opts.is_present( "h" ) ||
-	 opts.is_present( "help" ) ){
-      usage();
-      exit( EXIT_SUCCESS );
-    }
-    if ( opts.is_present( "V" ) ||
-	 opts.is_present( "version" ) ){
-      exit( EXIT_SUCCESS );
-    }
-    Configuration *config = initServerConfig( opts );
-    LOG << "STARTING A JSON SERVER!" << endl;
-    MbtJSONServerClass server( config );
-    server.Run();
-  }
-
 }
