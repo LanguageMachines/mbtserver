@@ -35,7 +35,13 @@ using namespace std;
 int main( int argc, const char *argv[]) {
   TiCC::CL_Options opts( Tagger::mbt_short_opts + TimblServer::serv_short_opts,
 			 Tagger::mbt_long_opts + TimblServer::serv_long_opts );
-  opts.init( argc, argv );
+  try {
+    opts.init( argc, argv );
+  }
+  catch ( const exception& e ){
+    cerr << e.what() << endl;
+    exit(EXIT_FAILURE);
+  }
   MbtServer::StartServer( opts );
   exit(EXIT_SUCCESS);
 }

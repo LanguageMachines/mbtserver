@@ -259,14 +259,20 @@ namespace MbtServer {
       exit( EXIT_SUCCESS );
     }
     Configuration *config = initServerConfig( opts );
-    if ( config->lookUp("protocol") == "json" ){
-      LOG << "STARTING A JSON SERVER!" << endl;
-      MbtJSONServerClass server( config );
-      server.Run();
+    if ( config ){
+      if ( config->lookUp("protocol") == "json" ){
+	LOG << "STARTING A JSON SERVER!" << endl;
+	MbtJSONServerClass server( config );
+	server.Run();
+      }
+      else {
+	MbtServerClass server( config );
+	server.Run();
+      }
     }
     else {
-      MbtServerClass server( config );
-      server.Run();
+      cerr << "starting failed" << endl;
+      exit( EXIT_FAILURE );
     }
   }
 }
