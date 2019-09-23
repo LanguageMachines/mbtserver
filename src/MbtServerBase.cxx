@@ -43,8 +43,8 @@ using namespace Timbl;
 using namespace Tagger;
 using namespace TiCC;
 
-#define SLOG (*Log(theServer->myLog))
-#define SDBG (*Dbg(theServer->myLog))
+#define SLOG (*Log(theServer->logstream()))
+#define SDBG (*Dbg(theServer->logstream()))
 
 namespace MbtServer {
 
@@ -80,7 +80,7 @@ namespace MbtServer {
       opts.init( it.second );
       exp->parse_run_args( opts, true );
       exp->set_default_filenames();
-      exp->setLog( myLog );
+      exp->setLog( logstream() );
       if ( exp->InitTagging() ){
 	cerr << "Created a tagger " << key << endl;
 	experiments[key] = exp;
@@ -106,28 +106,28 @@ namespace MbtServer {
   }
 
   MbtServerClass::MbtServerClass( const TiCC::Configuration *c ):
-    TcpServerBase( c ) {
-    myLog.message("MbtServer:");
-    myLog.setstamp(StampMessage);
-    if ( doDebug() )
-      myLog.setlevel( LogHeavy );
+    TcpServerBase( c, &experiments ) {
+    logstream().message("MbtServer:");
+    logstream().setstamp(StampMessage);
+    if ( doDebug() ){
+      logstream().setlevel( LogHeavy );
+    }
     cerr << "mbtserver " << VERSION << endl;
     cerr << "based on " << Timbl::VersionName() << " and "
 	 << TimblServer::VersionName() << endl;
+
     createServers( c );
     if ( experiments.empty() ){
       cerr << "starting the server failed." << endl;
       usage();
       exit( EXIT_FAILURE );
     }
-    callback_data = &experiments;
   }
 
   MbtServerClass::~MbtServerClass(){
     for ( const auto& it : experiments ){
       delete it.second;
     }
-    delete config;
   }
 
   inline void Split( const string& line, string& com, string& rest ){
@@ -145,15 +145,15 @@ namespace MbtServer {
   // ***** This is the routine that is executed from a new thread **********
   void MbtServerClass::callback( childArgs *args ){
     ServerBase *theServer = args->mother();
-    map<string, TaggerClass*> *experiments =
-      static_cast<map<string, TaggerClass*> *>(callback_data);
+    map<string, TaggerClass*> experiments =
+      *(static_cast<const map<string, TaggerClass*> *>(callback_data()));
 
     args->os() << "Welcome to the Mbt server." << endl;
     string baseName = "default";
-    if ( experiments->size() > 1 ){
-      map<string,TaggerClass*>::const_iterator it = experiments->begin();
+    if ( experiments.size() > 1 ){
+      map<string,TaggerClass*>::const_iterator it = experiments.begin();
       bool first = true;
-      while ( it != experiments->end() ){
+      while ( it != experiments.end() ){
 	if ( it->first != "default" ){
 	  if ( first ){
 	    args->os() << "available bases: ";
@@ -179,8 +179,8 @@ namespace MbtServer {
       if ( command == "base" ){
 	baseName = param;
       }
-      if ( experiments->find( baseName ) != experiments->end() ){
-	exp = (*experiments)[baseName]->clone( );
+      if ( experiments.find( baseName ) != experiments.end() ){
+	exp = experiments[baseName]->clone( );
 	if ( baseName != "default" ){
 	  args->os() << "base set to '" << baseName << "'" << endl;
 	  SLOG << "Set basename " << baseName << endl;
@@ -251,7 +251,7 @@ namespace MbtServer {
   void StartServer( TiCC::CL_Options& opts ){
     if ( opts.is_present( "h" ) ||
 	 opts.is_present( "help" ) ){
-      usage();
+      ServerBase::server_usage();
       exit( EXIT_SUCCESS );
     }
     if ( opts.is_present( "V" ) ||

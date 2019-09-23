@@ -47,8 +47,8 @@ using namespace nlohmann;
 
 using TiCC::operator<<;
 
-#define SLOG (*Log(theServer->myLog))
-#define SDBG (*Dbg(theServer->myLog))
+#define SLOG (*Log(theServer->logstream()))
+#define SDBG (*Dbg(theServer->logstream()))
 
 namespace MbtServer {
 
@@ -167,18 +167,18 @@ namespace MbtServer {
     MbtJSONServerClass *theServer = dynamic_cast<MbtJSONServerClass*>( args->mother() );
     int sockId = args->id();
     TaggerClass *exp = 0;
-    map<string, TaggerClass*> *experiments =
-      static_cast<map<string, TaggerClass*> *>(callback_data);
+    map<string, TaggerClass*> experiments =
+      *(static_cast<map<string, TaggerClass*> *>(callback_data()));
     json out_json;
     out_json["status"] = "ok";
     string baseName = "default";
     int nw = 0;
-    if ( experiments->size() == 1 ){
-      exp = (*experiments)[baseName]->clone();
+    if ( experiments.size() == 1 ){
+      exp = experiments[baseName]->clone();
     }
     else {
       json arr = json::array();
-      for ( const auto& it : *experiments ){
+      for ( const auto& it : experiments ){
 	arr.push_back( it.first );
       }
       out_json["available_bases"] = arr;
@@ -218,8 +218,8 @@ namespace MbtServer {
 	}
 	else {
 	  baseName = in_json["param"];
-	  if ( experiments->find( baseName ) != experiments->end() ){
-	    exp = (*experiments)[baseName]->clone( );
+	  if ( experiments.find( baseName ) != experiments.end() ){
+	    exp = experiments[baseName]->clone( );
 	    json out_json;
 	    out_json["base"] = baseName;
 	    args->os() << out_json << endl;
