@@ -53,7 +53,7 @@ using TiCC::operator<<;
 namespace MbtServer {
 
   json TR_to_json( const TaggerClass *context,
-			     const vector<TagResult>& trs ){
+		   const vector<TagResult>& trs ){
     json result = json::array();
     for ( const auto& tr : trs ){
       // lookup the assigned category
@@ -102,46 +102,6 @@ namespace MbtServer {
 	tr.set_enrichment( i["enrichment"] );
       }
       result.push_back( tr );
-    }
-    return result;
-  }
-
-
-  string extract_text( json& my_json ){
-    string result;
-    if ( my_json.is_array() ){
-      for ( const auto& it : my_json ){
-	string tmp = it["word"];
-	result += tmp + " ";
-	if ( it.find("enrichment") != it.end() ){
-	  tmp = it["enrichment"];
-	  result += tmp + " ";
-	  if ( it.find("tag") != it.end() ){
-	    tmp = it["tag"];
-	    result += tmp;
-	  }
-	  else {
-	    result += "??";
-	  }
-	  result += "\n";
-	}
-      }
-    }
-    else {
-      string tmp = my_json["word"];
-      result += tmp +  " ";
-      if ( my_json.find("enrichment") != my_json.end() ){
-	tmp = my_json["enrichment"];
-	result += tmp + " ";
-	if ( my_json.find("tag") != my_json.end() ){
-	  tmp = my_json["tag"];
-	  result += tmp;
-	}
-	else {
-	  result += "??";
-	}
-	result += "\n";
-      }
     }
     return result;
   }
@@ -242,20 +202,17 @@ namespace MbtServer {
 	}
 	else {
 	  cerr << "handle json request '" << in_json << "'" << endl;
-	  string text = extract_text( in_json["sentence"] );
-	  cerr << "TagLine (" << text << ")" << endl;
-	  vector<TagResult> v = exp->tagLine( text );
-	  int num = v.size();
+	  json out_json = exp->tag_JSON_to_JSON( in_json["sentence"] );
+	  int num = out_json.size();
 	  cerr << "ALIVE, got " << num << " tags" << endl;
 	  if ( num > 0 ){
 	    nw += num;
-	    json got_json = TR_to_json( exp, v );
-	    SDBG << "voor WRiTE json! " << got_json << endl;
-	    args->os() << got_json << endl;
+	    SDBG << "voor WRiTE json! " << out_json << endl;
+	    args->os() << out_json << endl;
 	    SDBG << "WROTE json!" << endl;
 	  }
 	  else {
-	    SDBG << "NO RESULT FOR TagLine (" << text << ")" << endl;
+	    SDBG << "NO RESULT FOR TagJSON (" << in_json << ")" << endl;
 	    json out_json;
 	    out_json["error"] = "tagger failed";
 	    args->os() << out_json << endl;
