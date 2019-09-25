@@ -79,10 +79,8 @@ namespace MbtServer {
   }
 
   vector<TagResult> json_to_TR( const json& in ){
-    //    cerr << "json_to_TR( " << in  << ")" << endl;
     vector<TagResult> result;
     for ( auto& i : in ){
-      //      cerr << "looping json_to_TR( " << i << ")" << endl;
       TagResult tr;
       tr.set_word( i["word"] );
       if ( i.find("known") != i.end() ){
@@ -106,8 +104,7 @@ namespace MbtServer {
     return result;
   }
 
-  bool MbtJSONServerClass::read_json( istream& is,
-				      json& the_json ){
+  bool read_json( istream& is, json& the_json ){
     the_json.clear();
     string json_line;
     if ( getline( is, json_line ) ){
@@ -143,16 +140,20 @@ namespace MbtServer {
       }
       out_json["available_bases"] = arr;
     }
-    cerr << "send JSON: " << out_json.dump(2) << endl;
+    if ( doDebug() ){
+      SLOG << "send JSON: " << out_json.dump(2) << endl;
+    }
     args->os() << out_json << endl;
 
     json in_json;
     bool go_on = true;
-    while ( go_on && theServer->read_json( args->is(), in_json ) ){
+    while ( go_on && read_json( args->is(), in_json ) ){
       if ( in_json.empty() ){
 	continue;
       }
-      cerr<< "handling JSON" << in_json.dump(2) << endl;
+      if ( doDebug() ){
+	SLOG << "handling JSON" << in_json.dump(2) << endl;
+      }
       string command;
       string param;
       vector<string> params;
@@ -163,7 +164,9 @@ namespace MbtServer {
 	DBG << sockId << " Don't understand '" << in_json << "'" << endl;
 	json out_json;
 	out_json["error"] = "Illegal instruction:'" + in_json.dump() + "'";
-	cerr << "send JSON: " << out_json.dump(2) << endl;
+	if ( doDebug() ){
+	  SLOG << "send JSON: " << out_json.dump(2) << endl;
+	}
 	args->os() << out_json << endl;
       }
       if ( command == "base" ){
@@ -173,7 +176,9 @@ namespace MbtServer {
 	if ( param.empty() ){
 	  json out_json;
 	  out_json["error"] = "missing param for 'base' instruction:'";
-	  cerr << "send JSON: " << out_json.dump(2) << endl;
+	  if ( doDebug() ){
+	    SLOG << "send JSON: " << out_json.dump(2) << endl;
+	  }
 	  args->os() << out_json << endl;
 	}
 	else {
@@ -183,12 +188,16 @@ namespace MbtServer {
 	    json out_json;
 	    out_json["base"] = baseName;
 	    args->os() << out_json << endl;
-	    cerr << "Set basename " << baseName << endl;
+	    if ( doDebug() ){
+	      SLOG << "Set basename " << baseName << endl;
+	    }
 	  }
 	  else {
 	    json out_json;
 	    out_json["error"] = "unknown base '" + baseName + "'";
-	    cerr << "send JSON: " << out_json.dump(2) << endl;
+	    if ( doDebug() ){
+	      SLOG << "send JSON: " << out_json.dump(2) << endl;
+	    }
 	    args->os() << out_json << endl;
 	  }
 	}
@@ -197,14 +206,20 @@ namespace MbtServer {
 	if ( !exp ){
 	  json out_json;
 	  out_json["error"] = "no base selected yet";
-	  cerr << "send JSON: " << out_json.dump(2) << endl;
+	  if ( doDebug() ){
+	    SLOG << "send JSON: " << out_json.dump(2) << endl;
+	  }
 	  args->os() << out_json << endl;
 	}
 	else {
-	  cerr << "handle json request '" << in_json << "'" << endl;
+	  if ( doDebug() ){
+	    SLOG << "handle json request '" << in_json << "'" << endl;
+	  }
 	  json out_json = exp->tag_JSON_to_JSON( in_json["sentence"] );
 	  int num = out_json.size();
-	  cerr << "ALIVE, got " << num << " tags" << endl;
+	  if ( doDebug() ){
+	    SLOG << "ALIVE, got " << num << " tags" << endl;
+	  }
 	  if ( num > 0 ){
 	    nw += num;
 	    SDBG << "voor WRiTE json! " << out_json << endl;
