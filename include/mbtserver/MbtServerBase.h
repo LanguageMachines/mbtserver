@@ -59,9 +59,6 @@ namespace MbtServer {
 
   void StartServer( TiCC::CL_Options& );
   void StartJSONServer( TiCC::CL_Options& );
-  nlohmann::json TR_to_json( const Tagger::TaggerClass *,
-			     const std::vector<Tagger::TagResult>& );
-  std::vector<Tagger::TagResult> json_to_TR( const nlohmann::json& );
 
 }
 #endif

@@ -52,58 +52,6 @@ using TiCC::operator<<;
 
 namespace MbtServer {
 
-  json TR_to_json( const TaggerClass *context,
-		   const vector<TagResult>& trs ){
-    json result = json::array();
-    for ( const auto& tr : trs ){
-      // lookup the assigned category
-      json one_entry;
-      one_entry["word"] = tr.word();
-      one_entry["known"] = tr.is_known();
-      if ( context->enriched() ){
-	one_entry["enrichment"] = tr.enrichment();
-      }
-      one_entry["tag"] = tr.assigned_tag();
-      if ( context->confidence_is_set() ){
-	one_entry["confidence"] = tr.confidence();
-      }
-      if ( context->distrib_is_set() ){
-	one_entry["distribution"] = tr.distribution();
-      }
-      if ( context->distance_is_set() ){
-	one_entry["distance"] = tr.distance();
-      }
-      result.push_back( one_entry );
-    } // end of output loop through one sentence
-    return result;
-  }
-
-  vector<TagResult> json_to_TR( const json& in ){
-    vector<TagResult> result;
-    for ( auto& i : in ){
-      TagResult tr;
-      tr.set_word( i["word"] );
-      if ( i.find("known") != i.end() ){
-	tr.set_known( i["known"] == "true" );
-      }
-      tr.set_tag( i["tag"] );
-      if ( i.find("confidence") != i.end() ){
-	tr.set_confidence( i["confidence"] );;
-      }
-      if ( i.find("distance") != i.end() ){
-	tr.set_distance( i["distance"] );
-      }
-      if ( i.find("distribution") != i.end() ){
-	tr.set_distribution( i["distribution"] );
-      }
-      if ( i.find("enrichment") != i.end() ){
-	tr.set_enrichment( i["enrichment"] );
-      }
-      result.push_back( tr );
-    }
-    return result;
-  }
-
   bool read_json( istream& is, json& the_json ){
     the_json.clear();
     string json_line;
@@ -156,7 +104,6 @@ namespace MbtServer {
       }
       string command;
       string param;
-      vector<string> params;
       if ( in_json.find( "command" ) != in_json.end() ){
 	command = in_json["command"];
       }
