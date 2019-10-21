@@ -1,4 +1,8 @@
-0.13 - ******
+0.13 - 2019-10-21
+[Ko vd Sloot]
+* added JSON support.
+  The JSON syntax might change in the future, so handle with care.
+* lots of refactoring.
 
 0.12 - 2018-05-16
 [Ko van der Sloot]
