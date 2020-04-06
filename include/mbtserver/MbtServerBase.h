@@ -33,7 +33,7 @@
 #include "ticcutils/json.hpp"
 
 namespace MbtServer {
-  using namespace TimblServer;
+  using namespace TiCCServer;
 
   class MbtServerClass : public TcpServerBase {
     friend class Tagger::TaggerClass;

@@ -114,7 +114,7 @@ namespace MbtServer {
     }
     cerr << "mbtserver " << VERSION << endl;
     cerr << "based on " << Timbl::VersionName() << " and "
-	 << TimblServer::VersionName() << endl;
+	 << TiCCServer::VersionName() << endl;
 
     createServers( c );
     if ( experiments.empty() ){
