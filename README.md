@@ -1,9 +1,10 @@
 [![GitHub build](https://github.com/LanguageMachines/mbtserver/actions/workflows/mbtserver.yml/badge.svg?branch=master)](https://github.com/LanguageMachines/mbtserver/actions/)
 [![Language Machines Badge](http://applejack.science.ru.nl/lamabadge.php/mbt)](http://applejack.science.ru.nl/languagemachines/)
 
-MbtServer: Tilburg Memory Based Tagger Server extension
-
 ===================================
+MbtServer: Tilburg Memory Based Tagger Server extension
+===================================
+
     MbtServer 0.9 (c) CLST/ILK/CNTS 1998-2016
 
     Centre for Language and Speech Technology, Radboud University Nijmegen
