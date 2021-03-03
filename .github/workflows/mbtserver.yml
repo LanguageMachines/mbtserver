@@ -84,7 +84,7 @@ jobs:
           CXX: ${{ matrix.compiler }}
         run: |
           git clone https://github.com/LanguageMachines/mbt;
-          cd timbl;
+          cd mbt;
           bash bootstrap.sh;
           ./configure;
           make;
