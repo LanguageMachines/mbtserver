@@ -1,13 +1,16 @@
-MbtServer 0.9 (c) CLST/ILK/CNTS 1998-2016
+[![GitHub build](https://github.com/LanguageMachines/mbtserver/actions/workflows/mbtserver.yml/badge.svg?branch=master)](https://github.com/LanguageMachines/mbtserver/actions/)
+[![Language Machines Badge](http://applejack.science.ru.nl/lamabadge.php/mbt)](http://applejack.science.ru.nl/languagemachines/)
 
- Tilburg Memory Based Tagger
- https://github.com/LanguageMachines/mbtserver
+MbtServer: Tilburg Memory Based Tagger Server extension
+
+===================================
+    MbtServer 0.9 (c) CLST/ILK/CNTS 1998-2016
 
     Centre for Language and Speech Technology, Radboud University Nijmegen
     Induction of Linguistic Knowledge Research Group, Tilburg University and
     Centre for Dutch Language and Speech, University of Antwerp
 
-This is the server extension of Mbt (http://languagemachines.github.io/mbt/)
+**Website:** https://languagemachines.github.io/mbt
 
 Comments and bug-reports are welcome on our issue tracker at
 https://github.com/LanguageMachines/mbtserver/issues , or by mailing
