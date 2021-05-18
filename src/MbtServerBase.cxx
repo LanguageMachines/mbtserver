@@ -120,6 +120,7 @@ namespace MbtServer {
     if ( experiments.empty() ){
       cerr << "starting the server failed." << endl;
       usage();
+      ServerBase::server_usage();
       exit( EXIT_FAILURE );
     }
   }
@@ -251,6 +252,7 @@ namespace MbtServer {
   void StartServer( TiCC::CL_Options& opts ){
     if ( opts.is_present( "h" ) ||
 	 opts.is_present( "help" ) ){
+      usage();
       ServerBase::server_usage();
       exit( EXIT_SUCCESS );
     }
