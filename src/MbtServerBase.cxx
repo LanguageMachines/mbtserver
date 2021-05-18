@@ -260,8 +260,12 @@ namespace MbtServer {
 	 opts.is_present( "version" ) ){
       exit( EXIT_SUCCESS );
     }
+    bool verbose = opts.is_present( "debug" );
     Configuration *config = initServerConfig( opts );
     if ( config ){
+      if ( verbose ){
+	cout << "read config: " << config << endl;
+      }
       if ( config->lookUp("protocol") == "json" ){
 	LOG << "STARTING A JSON SERVER!" << endl;
 	MbtJSONServerClass server( config );
