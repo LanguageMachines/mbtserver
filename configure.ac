@@ -59,6 +59,12 @@ else
     export PKG_CONFIG_PATH="$prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
 fi
 
+AC_OSX_PKG( [icu4c] )
+
+PKG_CHECK_MODULES([ICU], [icu-uc >= 50 icu-io] )
+CXXFLAGS="$CXXFLAGS $ICU_CFLAGS"
+LIBS="$ICU_LIBS $LIBS"
+
 PKG_CHECK_MODULES([ticcutils], [ticcutils >= 0.24] )
 CXXFLAGS="$CXXFLAGS $ticcutils_CFLAGS"
 LIBS="$LIBS $ticcutils_LIBS"
