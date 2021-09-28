@@ -208,9 +208,9 @@ namespace MbtServer {
 	    }
 	    text_block += Line + "\n";
 	  }
-	  string result;
+	  UnicodeString result;
 	  SDBG << "call TagLine '" << text_block << "'" << endl;
-	  int num = exp->TagLine( text_block, result );
+	  int num = exp->TagLine( TiCC::UnicodeFromUTF8(text_block), result );
 	  SDBG << "result     '" << result << "'" << endl;
 	  if ( num > 0 ){
 	    nw += num;
@@ -218,10 +218,10 @@ namespace MbtServer {
 	  }
 	}
 	else {
-	  string result;
 	  if ( command != "base" ){
 	    SDBG << "input line '" << Line << "'" << endl;
-	    int num = exp->TagLine( Line, result );
+	    UnicodeString result;
+	    int num = exp->TagLine( TiCC::UnicodeFromUTF8(Line), result );
 	    SDBG << "result     '" << result << "'" << endl;
 	    if ( num > 0 ){
 	      nw += num;
@@ -230,10 +230,12 @@ namespace MbtServer {
 	  }
 	  while ( getline( args->is(), Line ) ){
 	    string::size_type pos = Line.find('\r');
-	    if ( pos != string::npos )
+	    if ( pos != string::npos ){
 	      Line.erase(pos,1);
+	    }
 	    SDBG << "input line '" << Line << "'" << endl;
-	    int num = exp->TagLine( Line, result );
+	    UnicodeString result;
+	    int num = exp->TagLine( TiCC::UnicodeFromUTF8(Line), result );
 	    SDBG << "result     '" << result << "'" << endl;
 	    if ( num > 0 ){
 	      nw += num;
