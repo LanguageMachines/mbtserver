@@ -39,6 +39,7 @@
 #include <pthread.h>
 
 using namespace std;
+using namespace icu;
 using namespace Timbl;
 using namespace Tagger;
 using namespace TiCC;
