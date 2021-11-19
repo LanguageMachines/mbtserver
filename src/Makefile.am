@@ -8,6 +8,6 @@ bin_PROGRAMS = mbtserver
 mbtserver_SOURCES = MbtServer.cxx
 
 lib_LTLIBRARIES = libmbtserver.la
-libmbtserver_la_LDFLAGS= -version-info 1:0:0
+libmbtserver_la_LDFLAGS= -version-info 2:0:0
 
 libmbtserver_la_SOURCES = MbtServerBase.cxx MbtJSONServerBase.cxx
