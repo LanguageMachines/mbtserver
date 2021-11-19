@@ -102,7 +102,7 @@ jobs:
           echo "::set-output name=id::$id"
       - name: configure
         env:
-          CXX:  ${{ matrix.compiler }}
+          CXX: ${{ matrix.compiler }}
         run: ./configure
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 .
