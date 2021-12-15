@@ -1,3 +1,10 @@
+0.15 - 2020-12-15
+[Ko vd Sloot]
+* adapted to recent ticcutils
+* added dependency on ICU
+* several code refactorings
+* bumped library version
+
 0.14 - 2020-04-15
 [Ko vd Sloot]
 * adapted to the newest ticcutils
