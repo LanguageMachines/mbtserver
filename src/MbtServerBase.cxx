@@ -144,6 +144,14 @@ namespace MbtServer {
     }
   }
 
+  string strip_cr( string& line ){
+    string::size_type r_pos = line.find('\r');
+    if ( r_pos != string::npos ){
+      line.erase(r_pos,1);
+    }
+    return line;
+  }
+
   // ***** This is the routine that is executed from a new thread **********
   void MbtServerClass::callback( childArgs *args ){
     ServerBase *theServer = args->mother();
@@ -172,11 +180,9 @@ namespace MbtServer {
     TaggerClass *exp = 0;
     if ( getline( args->is(), Line ) ){
       SDBG << "FirstLine='" << Line << "'" << endl;
-      string command, param;
-      string::size_type pos = Line.find('\r');
-      if ( pos != string::npos )
-	Line.erase(pos,1);
+      Line = strip_cr( Line );
       SDBG << "Line='" << Line << "'" << endl;
+      string command, param;
       Split( Line, command, param );
       if ( command == "base" ){
 	baseName = param;
@@ -200,9 +206,7 @@ namespace MbtServer {
 	    text_block += Line + "\n";
 	  }
 	  while ( getline( args->is(), Line ) ){
-	    string::size_type pos = Line.find('\r');
-	    if ( pos != string::npos )
-	      Line.erase(pos,1);
+	    Line = strip_cr( Line );
 	    SDBG << "input line '" << Line << "'" << endl;
 	    if ( Line == "<utt>" ){
 	      break;
@@ -230,10 +234,7 @@ namespace MbtServer {
 	    }
 	  }
 	  while ( getline( args->is(), Line ) ){
-	    string::size_type pos = Line.find('\r');
-	    if ( pos != string::npos ){
-	      Line.erase(pos,1);
-	    }
+	    Line = strip_cr( Line );
 	    SDBG << "input line '" << Line << "'" << endl;
 	    UnicodeString result;
 	    int num = exp->TagLine( TiCC::UnicodeFromUTF8(Line), result );

@@ -94,8 +94,7 @@ namespace MbtServer {
     args->os() << out_json << endl;
 
     json in_json;
-    bool go_on = true;
-    while ( go_on && read_json( args->is(), in_json ) ){
+    while ( read_json( args->is(), in_json ) ){
       if ( in_json.empty() ){
 	continue;
       }
@@ -109,75 +108,75 @@ namespace MbtServer {
       }
       if ( command.empty() ){
 	DBG << sockId << " Don't understand '" << in_json << "'" << endl;
-	json out_json;
-	out_json["error"] = "Illegal instruction:'" + in_json.dump() + "'";
+	json err_json;
+	err_json["error"] = "Illegal instruction:'" + in_json.dump() + "'";
 	if ( doDebug() ){
-	  SLOG << "send JSON: " << out_json.dump(2) << endl;
+	  SLOG << "send JSON: " << err_json.dump(2) << endl;
 	}
-	args->os() << out_json << endl;
+	args->os() << err_json << endl;
       }
       if ( command == "base" ){
 	if ( in_json.find("param") != in_json.end() ){
 	  param = in_json["param"];
 	}
 	if ( param.empty() ){
-	  json out_json;
-	  out_json["error"] = "missing param for 'base' instruction:'";
+	  json err_json;
+	  err_json["error"] = "missing param for 'base' instruction:'";
 	  if ( doDebug() ){
-	    SLOG << "send JSON: " << out_json.dump(2) << endl;
+	    SLOG << "send JSON: " << err_json.dump(2) << endl;
 	  }
-	  args->os() << out_json << endl;
+	  args->os() << err_json << endl;
 	}
 	else {
 	  baseName = in_json["param"];
 	  if ( experiments.find( baseName ) != experiments.end() ){
 	    exp = experiments[baseName]->clone( );
-	    json out_json;
-	    out_json["base"] = baseName;
-	    args->os() << out_json << endl;
+	    json out_json_2;
+	    out_json_2["base"] = baseName;
+	    args->os() << out_json_2 << endl;
 	    if ( doDebug() ){
 	      SLOG << "Set basename " << baseName << endl;
 	    }
 	  }
 	  else {
-	    json out_json;
-	    out_json["error"] = "unknown base '" + baseName + "'";
+	    json err_json;
+	    err_json["error"] = "unknown base '" + baseName + "'";
 	    if ( doDebug() ){
-	      SLOG << "send JSON: " << out_json.dump(2) << endl;
+	      SLOG << "send JSON: " << err_json.dump(2) << endl;
 	    }
-	    args->os() << out_json << endl;
+	    args->os() << err_json << endl;
 	  }
 	}
       }
       else if ( command == "tag" ){
 	if ( !exp ){
-	  json out_json;
-	  out_json["error"] = "no base selected yet";
+	  json err_json;
+	  err_json["error"] = "no base selected yet";
 	  if ( doDebug() ){
-	    SLOG << "send JSON: " << out_json.dump(2) << endl;
+	    SLOG << "send JSON: " << err_json.dump(2) << endl;
 	  }
-	  args->os() << out_json << endl;
+	  args->os() << err_json << endl;
 	}
 	else {
 	  if ( doDebug() ){
 	    SLOG << "handle json request '" << in_json << "'" << endl;
 	  }
-	  json out_json = exp->tag_JSON_to_JSON( in_json["sentence"] );
-	  int num = out_json.size();
+	  json tags_json = exp->tag_JSON_to_JSON( in_json["sentence"] );
+	  int num = tags_json.size();
 	  if ( doDebug() ){
 	    SLOG << "ALIVE, got " << num << " tags" << endl;
 	  }
 	  if ( num > 0 ){
 	    nw += num;
-	    SDBG << "voor WRiTE json! " << out_json << endl;
-	    args->os() << out_json << endl;
+	    SDBG << "voor WRiTE json! " << tags_json << endl;
+	    args->os() << tags_json << endl;
 	    SDBG << "WROTE json!" << endl;
 	  }
 	  else {
 	    SDBG << "NO RESULT FOR TagJSON (" << in_json << ")" << endl;
-	    json out_json;
-	    out_json["error"] = "tagger failed";
-	    args->os() << out_json << endl;
+	    json err_json;
+	    err_json["error"] = "tagger failed";
+	    args->os() << err_json << endl;
 	  }
 	}
       }
