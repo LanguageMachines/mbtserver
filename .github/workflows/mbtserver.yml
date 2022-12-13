@@ -104,15 +104,15 @@ jobs:
 
       - name: bootstrap
         run: sh bootstrap.sh
-      - name: compiler-id
-        id: compiler
-        run: |
-          id=$(echo ${{matrix.compiler}} | cut -d\+ -f1)
-          echo "id=$id" >> GITHUB_OUTPUT
       - name: configure
         env:
           CXX: ${{ matrix.compiler }}
         run: ./configure
+      - name: compiler-id
+        id: compiler
+        run: >
+          echo "id=$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
+          >> GITHUB_OUTPUT
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
       - name: make
