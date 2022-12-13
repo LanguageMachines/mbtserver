@@ -14,19 +14,28 @@ on:
 jobs:
   notification:
     runs-on: ubuntu-latest
-    name: Notify start to #gitlama
+    name: Notify start to irc-gitlama
+    outputs:
+      branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
+      - name: Extract Branch name
+        shell: bash
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+        id: extract_branch
       - name: IRC notification
         uses: Gottox/irc-message-action@v1
         with:
           server: irc.uvt.nl
           channel: '#gitlama'
           nickname: GitHub
-          message: |-
-            ${{ github.actor }} started a build of ${{ github.event.repository.name }}
+          message: >
+            ${{ github.actor }} started a build of
+            ${{ github.event.repository.name }}
+            [${{ steps.extract_branch.outputs.branch }}]
 
   build:
     runs-on: ${{ matrix.os }}
+    needs: notification
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -99,7 +108,7 @@ jobs:
         id: compiler
         run: |
           id=$(echo ${{matrix.compiler}} | cut -d\+ -f1)
-          echo "::set-output name=id::$id"
+          echo "id=$id" >> GITHUB_OUTPUT
       - name: configure
         env:
           CXX: ${{ matrix.compiler }}
@@ -117,8 +126,11 @@ jobs:
           server: irc.uvt.nl
           channel: '#gitlama'
           nickname: GH-${{ runner.os }}-${{ steps.compiler.outputs.id }}
-          message: |-
-            ${{ github.event.repository.name }} with ${{ matrix.compiler }} build by ${{ github.actor }} on ${{ matrix.os }}: FAILED
+          message: >
+            MbtServer
+            [${{ needs.notification.outputs.branch }}]
+            build with ${{ matrix.compiler }} by ${{ github.actor }}
+            on ${{ matrix.os }}: FAILED
       - name: Notify IRC of succes
         if: ${{ success() }}
         uses: Gottox/irc-message-action@v1
@@ -126,5 +138,8 @@ jobs:
           server: irc.uvt.nl
           channel: '#gitlama'
           nickname: GH-${{ runner.os }}-${{ steps.compiler.outputs.id }}
-          message: |-
-            ${{ github.event.repository.name }} with ${{ matrix.compiler }} build by ${{ github.actor }} on ${{ matrix.os }}: SUCCESS
+          message: >
+            MbtServer
+            [${{ needs.notification.outputs.branch }}]
+            build with ${{ matrix.compiler }} by ${{ github.actor }}
+            on ${{ matrix.os }}: SUCCESS
