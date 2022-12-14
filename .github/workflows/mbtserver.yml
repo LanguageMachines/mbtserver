@@ -114,7 +114,7 @@ jobs:
           COMPILER: ${{ matrix.compiler }}
         run: |
           cid=$(echo $COMPILER | cut -d\+ -f1)
-          echo "cid=$cid" >> GITHUB_ENV
+          echo "cid=$cid" >> $GITHUB_ENV
       - run: echo "${{env.cid}}"
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
