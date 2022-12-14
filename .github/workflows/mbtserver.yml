@@ -42,9 +42,6 @@ jobs:
         compiler: [g++, clang++]
 
     steps:
-      outputs:
-        cid:
-	description: 'The compiler name without versions etc.'
       - uses: actions/checkout@v2
       - name: Install Build Environment
         run: |
@@ -115,7 +112,7 @@ jobs:
         id: compiler
         run: |
           cid="$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
-          echo "cid=$cid" >> GITHUB_OUTPUT
+          echo "cid=$cid" >> GITHUB_ENV
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
       - name: make
@@ -128,7 +125,7 @@ jobs:
         with:
           server: irc.uvt.nl
           channel: '#gitlama'
-          nickname: GH-${{ runner.os }}-${{ steps.compiler.outputs.cid }}
+          nickname: GH-${{ runner.os }}-${{ env.cid }}
           message: >
             MbtServer
             [${{ needs.notification.outputs.branch }}]
@@ -140,7 +137,7 @@ jobs:
         with:
           server: irc.uvt.nl
           channel: '#gitlama'
-          nickname: GH-${{ runner.os }}-${{ steps.compiler.outputs.cid }}
+          nickname: GH-${{ runner.os }}-${{ env.cid }}
           message: >
             MbtServer
             [${{ needs.notification.outputs.branch }}]
