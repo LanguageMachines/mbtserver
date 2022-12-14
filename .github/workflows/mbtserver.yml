@@ -42,6 +42,10 @@ jobs:
         compiler: [g++, clang++]
 
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Install Build Environment
         run: |
@@ -129,11 +133,7 @@ jobs:
           server: irc.uvt.nl
           channel: '#gitlama'
           nickname: GH-${{ runner.os }}-${{ env.cid }}
-          message: >
-            MbtServer
-            [${{ needs.notification.outputs.branch }}]
-            build with ${{ matrix.compiler }} by ${{ github.actor }}
-            on ${{ matrix.os }}: FAILED
+          message: "mbtServer [${{ needs.notification.outputs.branch }}] build with ${{ matrix.compiler }} by ${{ github.actor }} on ${{ matrix.os }}: \u00034FAIL\u0003"
       - name: Notify IRC of succes
         if: ${{ success() }}
         uses: Gottox/irc-message-action@v1
@@ -141,8 +141,4 @@ jobs:
           server: irc.uvt.nl
           channel: '#gitlama'
           nickname: GH-${{ runner.os }}-${{ env.cid }}
-          message: >
-            MbtServer
-            [${{ needs.notification.outputs.branch }}]
-            build with ${{ matrix.compiler }} by ${{ github.actor }}
-            on ${{ matrix.os }}: SUCCESS
+          message: "mbtServer [${{ needs.notification.outputs.branch }}] build with ${{ matrix.compiler }} by ${{ github.actor }} on ${{ matrix.os }}: \u00033SUCCESS\u0003"
