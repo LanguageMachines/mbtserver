@@ -111,8 +111,8 @@ jobs:
       - name: Get the cleaned compiler name
         id: compiler
         run: |
-          export cid="$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
-          >> GITHUB_OUTPUT
+          cid="$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
+          echo "id=$cid" >> GITHUB_OUTPUT
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
       - name: make
