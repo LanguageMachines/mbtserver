@@ -110,8 +110,10 @@ jobs:
         run: ./configure
       - name: Get the cleaned compiler name
         id: compiler
+        env:
+          COMPILER: ${{ matrix.compiler }}
         run: |
-          cid=$(echo ${{matrix.compiler}} | cut -d\+ -f1)
+          cid=$(echo $COMPILER | cut -d\+ -f1)
           echo "cid=$cid" >> GITHUB_ENV
       - run: echo "${{env.cid}}"
       - name: Static Code-check
