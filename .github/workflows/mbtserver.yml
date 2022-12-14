@@ -108,11 +108,11 @@ jobs:
         env:
           CXX: ${{ matrix.compiler }}
         run: ./configure
-      - name: compiler-id
+      - name: Get the cleaned compiler name
         id: compiler
         run: >
-          echo "cid=$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
-          >> GITHUB_OUTPUT
+          export cid="$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
+          echo $cid >> GITHUB_ENV
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
       - name: make
@@ -137,7 +137,7 @@ jobs:
         with:
           server: irc.uvt.nl
           channel: '#gitlama'
-          nickname: GH-${{ runner.os }}-${{ steps.compiler.outputs.cid }}
+          nickname: GH-${{ runner.os }}-${{ env.compiler.outputs.cid }}
           message: >
             MbtServer
             [${{ needs.notification.outputs.branch }}]
