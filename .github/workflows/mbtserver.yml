@@ -42,6 +42,9 @@ jobs:
         compiler: [g++, clang++]
 
     steps:
+      outputs:
+        cid:
+	description: 'The compiler name without versions etc.'
       - uses: actions/checkout@v2
       - name: Install Build Environment
         run: |
