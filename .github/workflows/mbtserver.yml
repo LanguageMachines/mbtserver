@@ -111,8 +111,9 @@ jobs:
       - name: Get the cleaned compiler name
         id: compiler
         run: |
-          cid="$(echo ${{matrix.compiler}} | cut -d\+ -f1)"
+          cid=$(echo ${{matrix.compiler}} | cut -d\+ -f1)
           echo "cid=$cid" >> GITHUB_ENV
+      - run: echo "${{env.cid}}"
       - name: Static Code-check
         run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
       - name: make
