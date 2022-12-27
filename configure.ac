@@ -1,12 +1,12 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 AC_INIT([mbtserver],[0.16],[lamasoftware@science.ru.nl])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 if test x"${CXXFLAGS+set}" = xset; then
   # the user set CXXFLAGS; don't override it.
@@ -21,7 +21,6 @@ fi
 
 # Checks for programs.
 AC_PROG_CXX( [g++] )
-AC_PROG_LIBTOOL
 LT_INIT
 
 # when running tests, use CXX
@@ -42,8 +41,8 @@ AC_TYPE_SIZE_T
 AC_CHECK_FUNCS([strerror])
 
 # check for pthreads first otherwise this may fail on OpenMp stuff
-ACX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
-if test x"$acx_pthread_ok" = xyes; then
+AX_PTHREAD([],[AC_MSG_NOTICE([no pthread support found])])
+if test x"$ax_pthread_ok" = xyes; then
    LIBS="$PTHREAD_LIBS $LIBS" \
    CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 fi
