@@ -120,7 +120,7 @@ jobs:
           echo "cid=$cid" >> $GITHUB_ENV
       - run: echo "${{env.cid}}"
       - name: Static Code-check
-        run: cppcheck --enable=all --quiet --error-exitcode=0 -I include .
+        run: cppcheck --enable=all --suppress=missingIncludeSystem -I include -I /usr/local/include --quiet --error-exitcode=0 -I include .
       - name: make
         run: make
       - name: install
