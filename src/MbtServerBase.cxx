@@ -155,11 +155,7 @@ namespace MbtServer {
   // ***** This is the routine that is executed from a new thread **********
   void MbtServerClass::callback( childArgs *args ){
     ServerBase *theServer = args->mother();
-    map<string, TaggerClass*> experiments =
-      *(static_cast<const map<string, TaggerClass*> *>(callback_data()));
-
     args->os() << "Welcome to the Mbt server." << endl;
-    string baseName = "default";
     if ( experiments.size() > 1 ){
       map<string,TaggerClass*>::const_iterator it = experiments.begin();
       bool first = true;
@@ -184,6 +180,7 @@ namespace MbtServer {
       SDBG << "Line='" << Line << "'" << endl;
       string command, param;
       Split( Line, command, param );
+      string baseName = "default";
       if ( command == "base" ){
 	baseName = param;
       }

@@ -44,6 +44,7 @@ namespace MbtServer {
   private:
     void callback( childArgs* );
     void createServers( const TiCC::Configuration * );
+  protected:
     std::map<std::string, Tagger::TaggerClass *> experiments;
   };
 

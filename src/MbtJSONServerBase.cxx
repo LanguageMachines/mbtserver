@@ -69,11 +69,9 @@ namespace MbtServer {
 
   // ***** This is the routine that is executed from a new thread **********
   void MbtJSONServerClass::callback( childArgs *args ){
-    MbtJSONServerClass *theServer = dynamic_cast<MbtJSONServerClass*>( args->mother() );
+    MbtJSONServerClass *theServer = dynamic_cast<MbtJSONServerClass*>( args->mother() ); // needed tot have SLOG en SDBG work
     int sockId = args->id();
     TaggerClass *exp = 0;
-    map<string, TaggerClass*> experiments =
-      *(static_cast<map<string, TaggerClass*> *>(callback_data()));
     json out_json;
     out_json["status"] = "ok";
     string baseName = "default";
@@ -102,7 +100,6 @@ namespace MbtServer {
 	SLOG << "handling JSON" << in_json.dump(2) << endl;
       }
       string command;
-      string param;
       if ( in_json.find( "command" ) != in_json.end() ){
 	command = in_json["command"];
       }
@@ -116,6 +113,7 @@ namespace MbtServer {
 	args->os() << err_json << endl;
       }
       if ( command == "base" ){
+	string param;
 	if ( in_json.find("param") != in_json.end() ){
 	  param = in_json["param"];
 	}
