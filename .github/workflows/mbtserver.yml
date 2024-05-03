@@ -6,7 +6,7 @@ on:
     paths:
       - 'src/**'
       - 'include/**'
-      - '.github/**'
+      - '.github/workflows/**'
 
   pull_request:
     branches: [master]
@@ -38,7 +38,7 @@ jobs:
     needs: notification
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-14]
         compiler: [g++, clang++]
 
     steps:
@@ -69,6 +69,16 @@ jobs:
                 brew install zlib
                 brew install cppcheck
              fi
+
+      - name: Configure CppCheck
+        run: |
+             if [ "$RUNNER_OS" == "Linux" ]; then
+                cpc_opts="--enable=warning,style --inline-suppr --force -I include -I /usr/local/include --quiet --error-exitcode=0"
+             else
+                cpc_opts="--enable=warning,style --inline-suppr --force -I include --check-level=exhaustive --quiet --error-exitcode=0"
+             fi
+             echo "cpc_opts=$cpc_opts" >> $GITHUB_ENV
+
       - name: install TiccUtils
         env:
           CXX: ${{ matrix.compiler }}
@@ -120,7 +130,7 @@ jobs:
           echo "cid=$cid" >> $GITHUB_ENV
       - run: echo "${{env.cid}}"
       - name: Static Code-check
-        run: cppcheck --enable=all --suppress=missingIncludeSystem -I include -I /usr/local/include --quiet --error-exitcode=0 -I include .
+        run: cppcheck ${{ env.cpc_opts }} .
       - name: make
         run: make
       - name: install
