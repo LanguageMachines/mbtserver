@@ -108,7 +108,7 @@ namespace MbtServer {
 
   MbtServerClass::MbtServerClass( const TiCC::Configuration *c ):
     TcpServerBase( c, &experiments ) {
-    logstream().message("MbtServer:");
+    logstream().set_message("MbtServer:");
     logstream().setstamp(StampMessage);
     if ( doDebug() ){
       logstream().setlevel( LogHeavy );
