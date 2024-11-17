@@ -109,9 +109,9 @@ namespace MbtServer {
   MbtServerClass::MbtServerClass( const TiCC::Configuration *c ):
     TcpServerBase( c, &experiments ) {
     logstream().set_message("MbtServer:");
-    logstream().setstamp(StampMessage);
+    logstream().set_stamp(StampMessage);
     if ( doDebug() ){
-      logstream().setlevel( LogHeavy );
+      logstream().set_level( LogHeavy );
     }
     cerr << "mbtserver " << VERSION << endl;
     cerr << "based on " << Timbl::VersionName() << " and "
