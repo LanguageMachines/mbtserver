@@ -1,3 +1,10 @@
+0.17 - 2024-12-16
+[Ko van der Sloot]
+* updated to latest ticcutils
+* require C++17
+* some refactoring
+* updated GitHUB CI
+
 0.16 -2023-01-02
 [Ko van der Sloot]
 * needs most recent ticcutils
